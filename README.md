@@ -30,6 +30,8 @@ This project was **designed and built end-to-end with [Grok Build](https://grok.
 
 > Open either file in a browser to see how it came together.
 
+> **Credits & roles**: **OutLoud was fully designed and built by [Grok Build](https://grok.com)** — all architecture, code, engines, hooks, and the build journey. **Claude Code** only performed **cosmetic doc edits, repo validation, and the final publish/push** (repo creation, link rename to `OutLoud`, WSL quickstart wording). No core functionality was authored by Claude.
+
 ---
 
 ## ✨ Features
