@@ -7,10 +7,12 @@
 A lightweight, on-demand (and optional auto-narration) text-to-speech speaker plugin. High-quality neural voice via **edge-tts + playsound** (no media-player popup), with native/`pyttsx3` fallbacks. **Zero extra LLM tokens** — it only speaks text that was already generated.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/rhishi99/OutLoud/actions/workflows/test.yml/badge.svg)](https://github.com/rhishi99/OutLoud/actions/workflows/test.yml)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-7c3aed)](https://docs.claude.com/en/docs/claude-code)
 [![Built with Grok Build](https://img.shields.io/badge/Built%20with-Grok%20Build-1d4ed8)](https://grok.com)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20WSL-blue)](#-requirements)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-3b82f6)](https://rhishi99.github.io/OutLoud)
 
 </div>
 
@@ -18,6 +20,44 @@ A lightweight, on-demand (and optional auto-narration) text-to-speech speaker pl
 
 > **Rebrand note**: This project was previously known as `claude-code-voice` and the **GitHub repo is now [`rhishi99/OutLoud`](https://github.com/rhishi99/OutLoud)** (the old URL auto-redirects).  
 > Config/state directories remain `claude-code-voice` internally (`%APPDATA%\claude-code-voice`, `~/.config/claude-code-voice`) so existing setups keep working — only the repo name changed.
+
+---
+
+## TL;DR
+
+**The problem** — long AI replies are walls of text that tire eyes and kill flow.
+
+**OutLoud's fix** — zero extra tokens, instant voice narration.
+
+```mermaid
+flowchart LR
+    A[LLM reply] --> B[Stop hook saves text]
+    B --> C[Hotkey / /speak / autoSpeak]
+    C --> D[Neural voice<br/>(edge-tts default)]
+```
+
+---
+
+## 🎬 Demo
+
+> **Placeholder ready** — real 20-40s recording of `/speak last` + `/speak on` (with terminal + actual audio) coming soon.
+
+**Drop-in instructions for the real demo asset:**
+
+```bash
+# Recommended: use OBS Studio / Windows Game Bar / ffmpeg
+# Example (macOS):
+#   ffmpeg -f avfoundation -i "1:0" -t 35 assets/demo.mp4
+# Then embed below and commit:
+#   <video src="assets/demo.mp4" controls width="100%"></video>
+```
+
+<!-- Replace this block with the real asset when ready -->
+```text
+[ assets/demo.mp4  —  terminal capture + voice of /speak last and /speak on  ]
+```
+
+See it in action in the [interactive visualizer](voice-plugin-visualizer.html) too.
 
 ---
 
@@ -319,6 +359,23 @@ Change engine/voice anytime (see Configuration section above).
 
 ---
 
+## 🖥️ Platform & Engine Matrix
+
+| Platform   | edge-tts                  | native                     | pyttsx3                    | kokoro (exp.)         |
+|------------|---------------------------|----------------------------|----------------------------|-----------------------|
+| **Windows** | ✅ full (needs net)      | ✅ full, offline           | ✅ full, offline           | ⚠️ heavy, optional    |
+| **macOS**   | ✅ full (needs net)      | ✅ full, offline (`say`)   | ✅ full, offline           | ⚠️ heavy, optional    |
+| **Linux**   | ✅ full (needs net)      | ⚠️ needs espeak-ng/spd-say | ✅ full, offline           | ⚠️ heavy, optional    |
+| **WSL**     | ✅ (WSLg/PulseAudio + net) | ⚠️ see WSL audio section  | ⚠️ audio often limited     | ⚠️ heavy, optional    |
+
+> ✅ = recommended / works with audio device & deps<br>
+> ⚠️ = works with extra setup or limited quality<br>
+> All playback is local after synthesis (edge-tts only step needing internet).
+
+---
+
+
+
 ## 🔧 Requirements
 
 Minimal:
@@ -432,6 +489,42 @@ Use your window manager's native keybinding tool if preferred.
 - Speaking is always explicit (hotkey, CLI, `/speak`) **or** opt-in via `autoSpeak`. Nothing speaks by default.
 
 See the [interactive visualizer](voice-plugin-visualizer.html) for the full flow diagram.
+
+---
+
+## ❓ Troubleshooting / FAQ
+
+**No audio in WSL**  
+WSL2 has no audio device by default. Use **WSLg** (built-in PulseAudio on Win11+). Test: `python scripts/speaker.py "hello"`.  
+Fallback: run from native Windows PowerShell instead, or install `mpg123` + use edge-tts fallback players.
+
+**edge-tts needs internet / want offline**  
+`edge-tts` requires net for synthesis only. Switch instantly:  
+`python scripts/speaker.py --engine native "offline test"`  
+(native is zero-dep, built-in on Win/mac, needs espeak-ng on Linux).
+
+**playsound install issues**  
+`pip install playsound==1.2.2` (exact pin recommended). If it fails on Linux, install system player (`mpg123`, `ffplay`) — speaker falls back automatically.
+
+**Stop hook not firing / no last response**  
+- Make sure the plugin is installed in Claude Code: `/plugin install speaker@outloud` (after marketplace add).  
+- Check hooks: the `hooks/hooks.json` registers on Stop. Restart Claude Code after install.  
+- Use `/speak last` or hotkey; first message must complete fully.
+
+**Status line not showing**  
+Add absolute path to `~/.claude/settings.json` (see Status Line section).  
+**Restart Claude Code completely** (not just reload). The badge reads live config + `OUTLOUD_MUTE`.
+
+**OUTLOUD_MUTE stuck / everything silent**  
+`OUTLOUD_MUTE=1` is a hard global kill switch (respected by CLI, hooks, and autoSpeak).  
+Unset it (close terminal or `set OUTLOUD_MUTE=`) or explicitly use a shell without the var. Check with `python scripts/speaker.py --config`.
+
+**General debug**  
+```bash
+python scripts/speaker.py --config
+python scripts/speaker.py --engine native "quick test"
+OUTLOUD_MUTE=1 python scripts/speaker.py --last   # safe
+```
 
 ---
 

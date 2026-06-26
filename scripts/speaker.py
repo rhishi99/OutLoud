@@ -655,6 +655,11 @@ def main():
     if args.volume is not None:
         cfg["volume"] = args.volume
 
+    # Global kill switch (documented + respected everywhere; used by CI for smoke tests without audio)
+    if os.environ.get("OUTLOUD_MUTE") == "1":
+        print("[speaker] OUTLOUD_MUTE=1 — playback suppressed (no audio)")
+        return
+
     cleaned = clean_text(text, cfg.get("strip_code", True))
 
     engine_name = cfg.get("engine", "edge-tts")
