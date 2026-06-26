@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔊 Claude-Code-Voice — Live Visualizer &amp; Config Console</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: #3b82f6;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .section-header {
+            font-size: 1.1rem;
+            letter-spacing: -.025em;
+        }
+
+        .glass {
+            background: rgba(255,255,255, 0.08);
+            backdrop-filter: blur(16px);
+        }
+
+        .terminal {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            background: #0f172a;
+            color: #64748b;
+        }
+
+        .status-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .mermaid {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .config-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .config-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        .nav-tab {
+            transition: all 0.1s ease;
+        }
+
+        .nav-tab.active {
+            background-color: #1e2937;
+            color: white;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .metric {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .flow-arrow {
+            animation: flow 1.5s ease infinite;
+        }
+
+        .mini-console {
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex items-center justify-between border-b border-slate-800 px-8 py-5">
+            <div class="flex items-center gap-x-3">
+                <div class="flex items-center justify-center w-11 h-11 rounded-2xl bg-blue-600">
+                    <i class="fa-solid fa-volume-high text-3xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-display text-3xl font-semibold tracking-tighter">claude-code-voice</h1>
+                    <p class="text-xs text-slate-400 -mt-1">Speaker Plugin • Grok Build + Claude Code</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-x-3">
+                <!-- Status Badge -->
+                <div class="flex items-center gap-x-2 bg-emerald-900/30 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-3xl text-sm font-medium">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full status-dot"></div>
+                    <span class="font-medium">READY: Local + Claude Code Plugin</span>
+                </div>
+                
+                <div class="bg-emerald-900/30 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-3xl text-sm flex items-center gap-x-2">
+                    <span class="font-medium">Grok Build testing supported</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-8 pt-8">
+            <!-- Hero -->
+            <div class="max-w-2xl">
+                <div class="inline-flex items-center gap-x-2 bg-slate-900 border border-slate-800 px-4 py-1 rounded-3xl text-sm mb-4">
+                    <i class="fa-solid fa-check"></i>
+                    <span class="font-medium">Ready for local use &amp; Claude Code plugin</span>
+                </div>
+                <h2 class="font-display text-5xl font-semibold tracking-tighter leading-none">
+                    Speaker for AI coding agents.<br>
+                    <span class="text-slate-400">Visualized &amp; configurable.</span>
+                </h2>
+                <p class="mt-3 text-xl text-slate-400">
+                    Default: edge-tts (Aria) + playsound for clean playback. Configurable TTS, on-demand only, zero extra LLM tokens. 
+                    Speaker flows for both Grok Build and future Claude Code. Live dev tool.
+                </p>
+            </div>
+
+            <!-- Quick Status -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4">
+                    <div class="text-xs uppercase tracking-widest text-slate-400">Current Mode</div>
+                    <div class="text-2xl font-semibold mt-1 text-emerald-400">Grok Testing</div>
+                    <div class="text-xs mt-1">edge-tts + playsound default • Direct calls + shared last-response</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4">
+                    <div class="text-xs uppercase tracking-widest text-slate-400">Primary Engine</div>
+                    <div class="flex gap-1 mt-2 flex-wrap">
+                        <span class="bg-emerald-900/50 border border-emerald-500/30 text-emerald-300 text-xs px-2 py-0.5 rounded">edge-tts (default)</span>
+                        <span class="bg-slate-800 text-xs px-2 py-0.5 rounded">+ playsound</span>
+                    </div>
+                    <div class="text-[10px] mt-1 text-slate-500">native / pyttsx3 available • kokoro supported (no push for now)</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4">
+                    <div class="text-xs uppercase tracking-widest text-slate-400">Minimum Setup</div>
+                    <div class="mt-1 font-mono text-sm">1-2 commands</div>
+                    <div class="text-xs text-emerald-300">pip + ask me to set edge-tts Aria</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex items-center">
+                    <div>
+                        <div class="text-xs uppercase tracking-widest text-slate-400">Token Cost</div>
+                        <div class="text-emerald-400 font-semibold">ZERO extra</div>
+                        <div class="text-xs">Just reads existing output</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="mt-8 border-b border-slate-800 flex gap-x-1 text-sm">
+                <button onclick="switchTab(this, 'overview')" class="nav-tab active px-5 py-2.5 font-medium rounded-t-2xl flex items-center gap-x-2 bg-slate-900">
+                    <i class="fa-solid fa-eye"></i> <span>Overview</span>
+                </button>
+                <button onclick="switchTab(this, 'console')" class="nav-tab px-5 py-2.5 font-medium rounded-t-2xl flex items-center gap-x-2 hover:bg-slate-900">
+                    <i class="fa-solid fa-terminal"></i> <span>Live Config Console</span>
+                </button>
+                <button onclick="switchTab(this, 'diagram')" class="nav-tab px-5 py-2.5 font-medium rounded-t-2xl flex items-center gap-x-2 hover:bg-slate-900">
+                    <i class="fa-solid fa-project-diagram"></i> <span>Architecture</span>
+                </button>
+                <button onclick="switchTab(this, 'files')" class="nav-tab px-5 py-2.5 font-medium rounded-t-2xl flex items-center gap-x-2 hover:bg-slate-900">
+                    <i class="fa-solid fa-folder-tree"></i> <span>Files &amp; Structure</span>
+                </button>
+            </div>
+
+            <!-- OVERVIEW TAB -->
+            <div id="overview" class="tab-content pt-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Minimum Commands -->
+                    <div class="lg:col-span-5 bg-slate-900 border border-slate-700 rounded-3xl p-6">
+                        <div class="flex items-center gap-x-2 mb-3">
+                            <i class="fa-solid fa-bolt text-yellow-400"></i>
+                            <span class="font-semibold">Minimum Commands (for local testing)</span>
+                        </div>
+                        
+                        <div class="space-y-3 text-sm">
+                            <div class="flex gap-3">
+                                <div class="font-mono bg-slate-800 px-2 py-0.5 rounded text-xs self-start mt-0.5">1</div>
+                                <div>
+                                    <code class="text-emerald-300">cd E:\vibe-code-projects\claude-code-voice</code>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <div class="font-mono bg-slate-800 px-2 py-0.5 rounded text-xs self-start mt-0.5">2</div>
+                                <div>
+                                    <div class="text-xs text-slate-400 mb-1">For natural voices (recommended):</div>
+                                    <code class="text-emerald-300">pip install edge-tts playsound</code><br>
+                                    <span class="text-[10px] text-slate-500">edge-tts + playsound = clean playback, very natural. kokoro supported but not primary focus now.</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <div class="font-mono bg-slate-800 px-2 py-0.5 rounded text-xs self-start mt-0.5">3</div>
+                                <div>
+                                    <div class="text-xs text-emerald-300 mb-0.5">Configure via chat with me (Grok):</div>
+                                    <div class="bg-slate-950 text-emerald-300 px-3 py-1 rounded text-xs font-mono border border-slate-800">"set engine to edge-tts with Aria voice"</div>
+                                    <div class="text-[10px] mt-1 text-slate-500">Default now: edge-tts + en-US-AriaNeural + playsound playback</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-slate-700 text-xs text-slate-400">
+                            Then just say: <span class="font-medium text-white">"speak the summary"</span> or <span class="font-medium text-white">"speak last"</span> (Grok will run real speaker.py)
+                        </div>
+                    </div>
+
+                    <!-- What exists -->
+                    <div class="lg:col-span-7 bg-slate-900 border border-slate-700 rounded-3xl p-6">
+                        <div class="font-semibold mb-3 flex items-center gap-x-2">
+                            <i class="fa-solid fa-check-double"></i>
+                            <span>What has been built (all local)</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <div class="font-medium text-slate-300">Claude Code Plugin Pieces</div>
+                                <ul class="mt-1 text-xs space-y-0.5 text-slate-400">
+                                    <li>• .claude-plugin/marketplace.json</li>
+                                    <li>• hooks/ (Stop hook saves text)</li>
+                                    <li>• commands/speak.md (/speak)</li>
+                                    <li>• skills/speaker/SKILL.md</li>
+                                    <li>• Status line badge (🔊)</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <div class="font-medium text-slate-300">Config + Engines</div>
+                                <ul class="mt-1 text-xs space-y-0.5 text-slate-400">
+                                    <li>• speaker.py — default edge-tts + Aria</li>
+                                    <li>• playsound for clean MP3 playback</li>
+                                    <li>• config.json driven (edge-tts focus)</li>
+                                    <li>• Smart root speak.ps1 + .cmd</li>
+                                    <li>• Grok direct + shared last-response</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Speaker Button / Hotkey Explanation -->
+                <div class="mt-6 bg-slate-900 border border-slate-700 rounded-3xl p-6">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <i class="fa-solid fa-hand-pointer text-blue-400"></i>
+                        <span class="font-semibold">How you get "button / hotkey speak" inside Grok &amp; Claude Code</span>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
+                        <div>
+                            <div class="uppercase text-xs tracking-widest text-slate-400 mb-1">The capture is automatic</div>
+                            <ul class="text-xs space-y-1 text-slate-300">
+                                <li>• <strong>Claude Code:</strong> Stop hook (hooks/save-last.js) quietly writes cleaned text to last-response.txt on every final response.</li>
+                                <li>• <strong>Grok Build:</strong> Grok directly runs speaker scripts with text (or uses --last against the shared capture file).</li>
+                            </ul>
+                            <div class="mt-3 text-xs">No auto-speak. The LLM output is just made "speakable".</div>
+                        </div>
+                        <div>
+                            <div class="uppercase text-xs tracking-widest text-slate-400 mb-1">The "button"</div>
+                            <div class="text-xs text-slate-300">
+                                <strong>Recommended:</strong> Global hotkey → runs <code class="bg-slate-800 px-1 rounded">scripts/speak.ps1</code> (or python speaker.py --last)<br>
+                                • Windows: PowerToys Keyboard Manager or AutoHotkey (e.g. Ctrl+Alt+S)<br>
+                                • Status line shows <span class="font-mono">🔊 last ~12s (hotkey or /speak)</span><br>
+                                • Claude: also type <code class="bg-slate-800 px-1">/speak</code><br>
+                                • In this Grok session: just say "speak the last" or "speak summary using speaker"
+                            </div>
+                            <div class="mt-2 text-[10px] text-emerald-300">This is the closest thing to a speaker button in the current terminal UIs.</div>
+                        </div>
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-slate-800 text-xs text-slate-400">
+                        The visualizer + Grok direct calls + hotkey = full dev loop right now. Later: install as real Claude plugin for the same hotkey/status experience.
+                    </div>
+                </div>
+
+                <!-- Voice Test Steps -->
+                <div class="mt-4 bg-slate-900 border border-emerald-700/40 rounded-3xl p-6">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <i class="fa-solid fa-vial text-emerald-400"></i>
+                        <span class="font-semibold">Quick Voice Test Steps (use in terminal / ask me)</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-xs">
+                        <div>
+                            <div class="font-medium text-emerald-300 mb-1">1. Install (once)</div>
+                            <code class="block bg-slate-950 p-2 rounded">pip install edge-tts playsound==1.2.2</code>
+                        </div>
+                        <div>
+                            <div class="font-medium text-emerald-300 mb-1">2. Set default (current focus)</div>
+                            <code class="block bg-slate-950 p-2 rounded text-[10px]">python scripts/speaker.py --set engine edge-tts<br>python scripts/speaker.py --set voice en-US-AriaNeural</code>
+                        </div>
+                        <div>
+                            <div class="font-medium text-emerald-300 mb-1">3. Direct speak test</div>
+                            <code class="block bg-slate-950 p-2 rounded">python scripts/speaker.py "Hello from edge-tts with playsound. This should be clean natural audio."</code>
+                        </div>
+                        <div>
+                            <div class="font-medium text-emerald-300 mb-1">4. Test via root wrapper + last</div>
+                            <code class="block bg-slate-950 p-2 rounded text-[10px]">.\speak.ps1 -Text "Testing root dispatcher"<br>.\speak.ps1 -Last</code>
+                        </div>
+                        <div class="md:col-span-2">
+                            <div class="font-medium text-emerald-300 mb-1">5. List voices / inspect / reset</div>
+                            <div class="flex flex-wrap gap-x-2">
+                                <code class="bg-slate-950 px-2 py-0.5 rounded text-[10px]">python scripts/speaker.py --list-voices --engine edge-tts</code>
+                                <code class="bg-slate-950 px-2 py-0.5 rounded text-[10px]">python scripts/speaker.py --config</code>
+                                <code class="bg-slate-950 px-2 py-0.5 rounded text-[10px]">python scripts/speaker.py --set engine native</code>
+                            </div>
+                            <div class="mt-1 text-slate-400">After changing config, try "speak last result with current voice" — Grok will call the real script.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-xs px-1 text-slate-400">
+                    <strong class="text-slate-200">Important:</strong> Nothing has been installed into any real Claude Code instance. 
+                    All testing so far has been done by directly calling the speak scripts from this Grok chat using the terminal tool.
+                    Default engine is now <span class="font-medium text-emerald-300">edge-tts</span> (Aria) with playsound for clean playback.
+                </div>
+            </div>
+
+            <!-- LIVE CONFIG CONSOLE -->
+            <div id="console" class="tab-content pt-6 hidden">
+                <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 mini-console">
+                    <div class="flex justify-between items-center mb-4">
+                        <div>
+                            <span class="font-semibold text-lg">Live Config Console</span>
+                            <span class="ml-2 text-xs bg-emerald-600/20 text-emerald-400 px-2 py-0.5 rounded">edge-tts + Aria default • playsound</span>
+                        </div>
+                        <button onclick="resetConfigForm()" 
+                                class="text-xs px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-2xl flex items-center gap-x-1">
+                            <i class="fa-solid fa-undo"></i> <span>Reset</span>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Engine -->
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">TTS ENGINE</label>
+                            <select id="engine" onchange="updateVoicePresets()" 
+                                    class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
+                                <option value="edge-tts" selected>edge-tts — Microsoft neural (very natural) ★ default + playsound</option>
+                                <option value="native">native — OS built-in (fast, zero deps)</option>
+                                <option value="pyttsx3">pyttsx3 — improved native wrapper</option>
+                                <option value="kokoro">kokoro — local neural (offline) — supported, not primary</option>
+                            </select>
+                        </div>
+
+                        <!-- Voice -->
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">VOICE</label>
+                            <select id="voice" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+
+                        <!-- Rate + Volume -->
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">SPEED (rate)</label>
+                            <div class="flex items-center gap-3">
+                                <input type="range" id="rate" min="0.5" max="1.8" step="0.05" value="1.0" 
+                                       oninput="updateRateLabel(this)" class="flex-1 accent-blue-600">
+                                <span id="rate-value" class="w-12 text-right font-mono text-sm tabular-nums">1.0</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1.5">VOLUME</label>
+                            <div class="flex items-center gap-3">
+                                <input type="range" id="volume" min="0.1" max="1" step="0.05" value="0.75" 
+                                       oninput="updateVolumeLabel(this)" class="flex-1 accent-blue-600">
+                                <span id="volume-value" class="w-12 text-right font-mono text-sm tabular-nums">0.75</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test phrase -->
+                    <div class="mt-5">
+                        <label class="block text-xs font-medium text-slate-400 mb-1.5">TEST PHRASE (what to speak)</label>
+                        <textarea id="test-phrase" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-2 text-sm"
+                                  placeholder="The speaker plugin is now fully configurable with natural voices."></textarea>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="mt-5 flex flex-wrap gap-2">
+                        <button onclick="applyConfigViaChat()"
+                                class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-500 transition-colors px-5 py-2.5 text-sm font-medium rounded-3xl flex items-center justify-center gap-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Ask Grok to Apply This Config</span>
+                        </button>
+                        
+                        <button onclick="copyApplyCommands()"
+                                class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-700 px-5 py-2.5 text-sm font-medium rounded-3xl flex items-center justify-center gap-x-2">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Copy --set Commands</span>
+                        </button>
+                        
+                        <button onclick="showSpeakCommand()"
+                                class="flex-1 md:flex-none bg-slate-800 hover:bg-slate-700 px-5 py-2.5 text-sm font-medium rounded-3xl flex items-center justify-center gap-x-2">
+                            <i class="fa-solid fa-microphone"></i>
+                            <span>Show Speak Command</span>
+                        </button>
+                    </div>
+
+                    <div id="console-output" class="mt-4 text-xs bg-slate-950 border border-slate-800 p-3 rounded-2xl font-mono hidden"></div>
+                </div>
+                
+                <div class="text-[10px] mt-2 px-1 text-slate-500">
+                    This console is interactive in your browser. Clicking "Ask Grok to Apply" will give me the exact text to execute right now using the terminal tool. Uses current project default (edge-tts + Aria).
+                </div>
+            </div>
+
+            <!-- DIAGRAM TAB -->
+            <div id="diagram" class="tab-content pt-6 hidden">
+                <div class="mb-3 text-sm font-semibold">Speaker Flows — Grok Build vs Claude Code</div>
+                <div class="mermaid bg-slate-900 p-4 rounded-3xl text-sm" id="flow-diagram">
+                    flowchart TB
+                        subgraph "Claude Code (full plugin)"
+                            CCQ[User question in Claude Code] --> CCResp[Claude finishes response]
+                            CCResp --> StopHook[Stop Hook<br/>hooks/save-last.js<br/>clean text]
+                            StopHook --> LastFile[(last-response.txt<br/>%APPDATA% or ~/.config)]
+                        end
+
+                        subgraph "Grok Build (direct for dev)"
+                            GQ[User question in Grok] --> GResp[Grok outputs text]
+                            GResp --> GTerm[Grok terminal tool<br/>or 'speak the summary']
+                            GTerm --> DirectSpeak[scripts/speak.ps1 or speaker.py &quot;...&quot;]
+                            DirectSpeak --> LastFile
+                        end
+
+                        LastFile --> Trigger{How speak is triggered}
+                        Trigger -->|Hotkey / Button| SpeakScript
+                        Trigger -->|/speak or 'speak last'| SpeakScript
+                        Trigger -->|Grok ask to speak| SpeakScript
+
+                        SpeakScript[speak.ps1 / speaker.py<br/>(checks config.json)]
+                        SpeakScript --> Engine{engine?}
+                        
+                        Engine -->|native| Native[Windows SAPI<br/>fast zero-dep]
+                        Engine -->|edge-tts ★| Edge[edge-tts<br/>Microsoft Neural<br/>save .mp3]
+                        Engine -->|pyttsx3| Pyttsx[native wrapper]
+                        Engine -->|kokoro| Kokoro[Kokoro local neural<br/>(supported)]
+
+                        Edge --> Playsound[playsound (clean playback)<br/>no/minimal window]
+                        Playsound --> Audio[Audio output]
+                        Native --> Audio
+                        Pyttsx --> Audio
+                        Kokoro --> Audio
+
+                        style LastFile fill:#1e3a5f,color:#bae6fd
+                        style SpeakScript fill:#1e40af,color:#bfdbfe
+                        style Edge fill:#166534,color:#86efac
+                        style Playsound fill:#166534,color:#86efac
+                </div>
+
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                    <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                        <div class="font-semibold mb-2">Capture Layer</div>
+                        <div class="text-slate-400">Stop hook (Claude) or direct invoke (Grok). Only saves cleaned text. Never triggers audio itself.</div>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                        <div class="font-semibold mb-2">Dispatch + Playback</div>
+                        <div class="text-slate-400">Reads config (default edge-tts + Aria). edge-tts uses playsound for clean MP3 playback after streaming.</div>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                        <div class="font-semibold mb-2">On-Demand Only</div>
+                        <div class="text-slate-400">No auto-speaking ever. User/hotkey/<code>/speak</code> or direct ask in Grok triggers playback.</div>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-3 bg-slate-900 border border-slate-700 rounded-2xl text-xs">
+                    <span class="font-medium text-emerald-300">Current primary path:</span> edge-tts → generate mp3 → playsound (block=True) → delete temp file. Falls back gracefully.
+                </div>
+            </div>
+
+            <!-- FILES TAB -->
+            <div id="files" class="tab-content pt-6 hidden">
+                <div class="bg-slate-900 border border-slate-700 rounded-3xl p-5 text-sm">
+                    <div class="font-semibold mb-3">Project Structure (what we created)</div>
+                    <pre class="text-xs bg-slate-950 p-4 rounded-2xl overflow-auto"><code>claude-code-voice/
+├── .claude-plugin/
+│   └── marketplace.json          # Plugin definition for Claude
+├── hooks/
+│   ├── hooks.json                # Registers Stop hook
+│   └── save-last.js              # Captures last assistant message
+├── commands/
+│   ├── speak.md                  # /speak command definition
+│   └── speaker-config.md         # /speaker-config helper
+├── skills/
+│   ├── speaker/SKILL.md          # Claude Code skill
+│   └── grok-voice/SKILL.md       # Grok Build skill (this chat)
+├── scripts/
+│   ├── speaker.py                # ★ Main driver (edge-tts default + playsound)
+│   ├── speak.ps1                 # Native + smart config dispatcher
+│   ├── setup.ps1                 # Helper (hotkey/status examples)
+│   └── status.js                 # 🔊 status line badge
+├── speak.ps1                     # Root convenience wrapper
+├── speak.cmd
+├── config.example.json
+├── requirements.txt              # edge-tts, playsound, ...
+└── voice-plugin-visualizer.html  # This live dev tool
+</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-8 py-8 text-xs border-t border-slate-800 mt-8 text-slate-500 flex justify-between items-center">
+            <div>
+                All work is local to this folder. No changes made to any Claude Code installation.
+                <br>
+                Current focus: edge-tts (Aria) + playsound for clean playback. Hotkey + /speak + direct Grok speak.
+            </div>
+            <button onclick="window.location.reload()" class="text-blue-400 hover:text-blue-300">Reload visualizer</button>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initTailwind() {
+            document.documentElement.style.setProperty('--accent', '#3b82f6');
+        }
+
+        let currentTab = 'overview';
+
+        function switchTab(element, tab) {
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Show selected
+            document.getElementById(tab).classList.remove('hidden');
+            
+            // Update active tab style
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active', 'bg-slate-900'));
+            element.classList.add('active', 'bg-slate-900');
+            
+            if (tab === 'diagram') {
+                setTimeout(() => {
+                    const diag = document.getElementById('flow-diagram');
+                    if (diag && window.mermaid) {
+                        diag.removeAttribute('data-processed'); // allow re-render
+                        mermaid.run({ querySelector: '#flow-diagram' });
+                    }
+                }, 120);
+            }
+        }
+
+        // Voice presets per engine (edge-tts is current default focus)
+        const voicePresets = {
+            'native': ['Default OS voice', 'Microsoft David', 'Microsoft Zira'],
+            'pyttsx3': ['Default', 'com.apple.speech.synthesis.voice.Alex', 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Speech\\Voices\\Tokens\\TTS_MS_EN-US_ZIRA_11.0'],
+            'edge-tts': [
+                'en-US-AriaNeural', 
+                'en-US-JennyNeural', 
+                'en-US-GuyNeural',
+                'en-GB-SoniaNeural',
+                'en-AU-NatashaNeural',
+                'en-US-EmmaNeural'
+            ],
+            'kokoro': [
+                'af_heart', 'af_nova', 'am_adam', 'am_fenrir', 
+                'bf_emma', 'bm_george', 'af_alloy'
+            ]
+        };
+
+        function updateVoicePresets() {
+            const engine = document.getElementById('engine').value;
+            const voiceSelect = document.getElementById('voice');
+            voiceSelect.innerHTML = '';
+            
+            const voices = voicePresets[engine] || ['Default'];
+            voices.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v;
+                opt.textContent = v;
+                voiceSelect.appendChild(opt);
+            });
+            
+            // sensible defaults — edge-tts + Aria is the project default
+            if (engine === 'edge-tts') voiceSelect.value = 'en-US-AriaNeural';
+            if (engine === 'kokoro') voiceSelect.value = 'af_heart';
+        }
+
+        function updateRateLabel(slider) {
+            document.getElementById('rate-value').textContent = parseFloat(slider.value).toFixed(2);
+        }
+        
+        function updateVolumeLabel(slider) {
+            document.getElementById('volume-value').textContent = parseFloat(slider.value).toFixed(2);
+        }
+
+        function getCurrentConfig() {
+            return {
+                engine: document.getElementById('engine').value,
+                voice: document.getElementById('voice').value,
+                rate: parseFloat(document.getElementById('rate').value),
+                volume: parseFloat(document.getElementById('volume').value),
+                testPhrase: document.getElementById('test-phrase').value || 'This is a test of the configurable speaker plugin.'
+            };
+        }
+
+        function applyConfigViaChat() {
+            const cfg = getCurrentConfig();
+            const msg = `Please apply this configuration for the speaker right now:\n` +
+                        `python scripts/speaker.py --set engine ${cfg.engine}\n` +
+                        `python scripts/speaker.py --set voice "${cfg.voice}"\n` +
+                        `python scripts/speaker.py --set rate ${cfg.rate}\n` +
+                        `python scripts/speaker.py --set volume ${cfg.volume}\n\n` +
+                        `Then speak this test phrase: "${cfg.testPhrase}"`;
+            
+            const output = document.getElementById('console-output');
+            output.innerHTML = `<div class="text-emerald-400">✅ Message prepared for Grok:</div><pre class="text-xs mt-2 whitespace-pre-wrap">${msg}</pre>`;
+            output.classList.remove('hidden');
+            
+            // In real use, user would copy-paste to me or I read the DOM (but here just show)
+            // For this demo, we also show how the user can ask me.
+            alert("Copy the commands above and paste them to me in chat, or just say:\n\n" + 
+                  `"set engine to ${cfg.engine} with voice ${cfg.voice}" (this is now the default)`);
+        }
+
+        function copyApplyCommands() {
+            const cfg = getCurrentConfig();
+            const cmd = `python scripts/speaker.py --set engine ${cfg.engine}
+python scripts/speaker.py --set voice "${cfg.voice}"
+python scripts/speaker.py --set rate ${cfg.rate}
+python scripts/speaker.py --set volume ${cfg.volume}`;
+
+            navigator.clipboard.writeText(cmd).then(() => {
+                // simple toast
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-emerald-900 text-white px-5 py-2 rounded-3xl text-xs';
+                toast.textContent = 'Commands copied to clipboard!';
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2200);
+            });
+        }
+
+        function showSpeakCommand() {
+            const cfg = getCurrentConfig();
+            const phrase = cfg.testPhrase;
+            
+            let cmd = `python scripts/speaker.py "${phrase}" --engine ${cfg.engine} --voice "${cfg.voice}" --volume ${cfg.volume}`;
+            
+            if (cfg.engine === 'native') {
+                cmd = `.\\speak.ps1 -Text "${phrase}"`;
+            } else if (cfg.engine === 'edge-tts') {
+                cmd += '   # uses playsound for clean playback';
+            }
+            
+            const output = document.getElementById('console-output');
+            output.innerHTML = `<div class="text-amber-300">Run this command:</div><code class="block mt-2 bg-black px-3 py-2 rounded text-emerald-300 text-xs">${cmd}</code>`;
+            output.classList.remove('hidden');
+            
+            navigator.clipboard.writeText(cmd);
+        }
+
+        function resetConfigForm() {
+            document.getElementById('engine').value = 'edge-tts';
+            document.getElementById('rate').value = 1.0;
+            document.getElementById('volume').value = 0.75;
+            document.getElementById('test-phrase').value = '';
+            updateVoicePresets();
+            document.getElementById('rate-value').textContent = '1.00';
+            document.getElementById('volume-value').textContent = '0.75';
+            document.getElementById('console-output').classList.add('hidden');
+            // ensure Aria after reset
+            setTimeout(() => {
+                const v = document.getElementById('voice');
+                if (v) v.value = 'en-US-AriaNeural';
+            }, 10);
+        }
+
+        function initConsole() {
+            // Initial voice presets
+            const engineEl = document.getElementById('engine');
+            engineEl.addEventListener('change', updateVoicePresets);
+            
+            // Set initial values — project default: edge-tts + Aria + playsound
+            updateVoicePresets();
+            
+            // Default nice phrase
+            document.getElementById('test-phrase').value = 
+                "The speaker plugin now defaults to edge-tts with Aria for clean natural playback via playsound.";
+            
+            // Set default sliders (slightly natural rate)
+            document.getElementById('rate').value = 1.05;
+            document.getElementById('volume').value = 0.75;
+            document.getElementById('rate-value').textContent = '1.05';
+            document.getElementById('volume-value').textContent = '0.75';
+            
+            // Force project defaults on load
+            engineEl.value = 'edge-tts';
+            updateVoicePresets();
+            document.getElementById('voice').value = 'en-US-AriaNeural';
+        }
+
+        function initMermaid() {
+            if (window.mermaid) {
+                mermaid.initialize({ 
+                    startOnLoad: false, 
+                    theme: 'dark',
+                    flowchart: { curve: 'basis' }
+                });
+            }
+        }
+
+        function initEverything() {
+            initTailwind();
+            initConsole();
+            initMermaid();
+            
+            // Show overview by default
+            document.getElementById('overview').classList.remove('hidden');
+            
+            // Keyboard hint
+            console.log('%c[Voice Visualizer] Tip: Open this file in your browser for the live config console (defaults to edge-tts + Aria).', 'color:#64748b');
+            
+            // Optional: auto-run a light mermaid if diagram is visible later
+        }
+
+        // Boot
+        window.onload = initEverything;
+
+        // Bonus: allow user to click a status to "speak" a demo phrase via alert + copy
+        function demoSpeak() {
+            const phrase = "This is the current state of the claude-code-voice plugin. Default is edge-tts with Aria via playsound.";
+            alert("To speak this right now, tell me in the chat:\n\nspeak: " + phrase);
+        }
+    </script>
+</body>
+</html>

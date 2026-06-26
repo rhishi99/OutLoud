@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-code-voice",
+  "description": "claude-code-voice speaker: edge-tts + playsound recommended for clean neural TTS. On-demand / hotkey / /speak for last AI output. Zero tokens. Ready for Claude Code + local + Grok Build.",
+  "owner": {
+    "name": "claude-code-voice",
+    "url": "https://github.com/yourname/claude-code-voice"
+  },
+  "plugins": [
+    {
+      "name": "speaker",
+      "description": "Terminal speaker: 🔊 icon + on-demand TTS. Stop hook capture + status badge. Works for Claude Code and also directly invocable from Grok Build for testing. Hotkey or /speak to hear the output.",
+      "source": "./",
+      "category": "productivity",
+      "version": "0.1.0"
+    }
+  ]
+}
