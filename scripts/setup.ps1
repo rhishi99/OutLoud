@@ -67,7 +67,7 @@ Write-Host '   # kokoro support is paused (experimental; contributions welcome f
 Write-Host ''
 
 Write-Host '6. Claude Code plugin install:' -ForegroundColor Yellow
-Write-Host '   /plugin marketplace add rhishi99/claude-code-voice'
+Write-Host '   /plugin marketplace add rhishi99/OutLoud'
 Write-Host '   /plugin install speaker@speaker'
 Write-Host ''
 

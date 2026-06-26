@@ -16,9 +16,8 @@ A lightweight, on-demand (and optional auto-narration) text-to-speech speaker pl
 
 ---
 
-> **Rebrand note**: This project was previously known as `claude-code-voice`. It has been rebranded to **OutLoud**.  
-> The repository folder on disk (and most internal paths/config directories) remains `claude-code-voice` **for now** (a full rename is planned as a follow-up).  
-> Marketplace references, clone commands, config locations (`claude-code-voice`), and scripts continue to use the legacy folder name until the rename lands.
+> **Rebrand note**: This project was previously known as `claude-code-voice` and the **GitHub repo is now [`rhishi99/OutLoud`](https://github.com/rhishi99/OutLoud)** (the old URL auto-redirects).  
+> Config/state directories remain `claude-code-voice` internally (`%APPDATA%\claude-code-voice`, `~/.config/claude-code-voice`) so existing setups keep working — only the repo name changed.
 
 ---
 
@@ -54,15 +53,15 @@ This project was **designed and built end-to-end with [Grok Build](https://grok.
 ### Option A — Install as a Claude Code plugin
 
 ```bash
-/plugin marketplace add rhishi99/claude-code-voice
+/plugin marketplace add rhishi99/OutLoud
 /plugin install speaker@speaker
 ```
 
 ### Option B — Clone & set up locally (incl. WSL)
 
 ```bash
-git clone https://github.com/rhishi99/claude-code-voice.git
-cd claude-code-voice
+git clone https://github.com/rhishi99/OutLoud.git
+cd OutLoud
 
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
@@ -74,6 +73,70 @@ python scripts/speaker.py --set engine edge-tts --set voice "en-US-AriaNeural"
 ### Add the status line badge (recommended)
 
 See the dedicated **[Status Line](#status-line-informational-only)** section below.
+
+---
+
+## 🐧 Test in WSL + Claude Code (simplest path)
+
+> First time? This is the shortest route to hearing OutLoud inside Claude Code running in WSL. ~3 minutes.
+
+**1. Clone + install (inside your WSL shell)**
+
+```bash
+sudo apt update && sudo apt install -y python3-venv python3-pip mpg123
+git clone https://github.com/rhishi99/OutLoud.git
+cd OutLoud
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+**2. Make sure WSL can play audio**
+
+WSL2 has **no audio device by default**. You need one of:
+
+- **WSLg** (Windows 11, or recent Windows 10) — audio works out of the box via built-in PulseAudio. Nothing to do. ✅
+- **No WSLg?** — easiest fallback is to let Windows play the file. Either upgrade to WSLg, or run OutLoud from native Windows/PowerShell instead (see [Quick Start → Option B]).
+
+**3. Smoke test (no Claude Code yet)**
+
+```bash
+python3 scripts/speaker.py "Hello from OutLoud, running inside WSL"
+```
+
+- You hear the sentence → audio path works. ✅
+- No sound but it prints `Played cleanly...` → audio device missing (see step 2).
+- `playsound failed ... falling back` → it tries `mpg123`/`ffplay`/`aplay`; install `mpg123` (step 1) if all fail.
+
+**4. Wire into Claude Code**
+
+```bash
+# from inside Claude Code, in this repo:
+/plugin marketplace add rhishi99/OutLoud
+/plugin install speaker@speaker
+```
+
+Then ask Claude anything and run:
+
+```
+/speak last
+```
+
+You should hear the last response. To auto-narrate every reply:
+
+```
+/speak on
+```
+
+**5. If something's off**
+
+```bash
+python3 scripts/speaker.py --config        # show current settings
+python3 scripts/speaker.py --engine native --last   # offline fallback voice
+OUTLOUD_MUTE=1 ...                          # global kill switch
+```
+
+> Tip: `engine native` works fully offline with zero extra packages — good for confirming the plumbing before debugging edge-tts/audio.
 
 ---
 

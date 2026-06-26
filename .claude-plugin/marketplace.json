@@ -4,7 +4,7 @@
   "description": "OutLoud — give your AI coding agent a voice. On-demand + autoSpeak auto-narration. edge-tts + playsound default. Zero tokens. Hotkey, /speak, status badge.",
   "owner": {
     "name": "OutLoud",
-    "url": "https://github.com/rhishi99/claude-code-voice"
+    "url": "https://github.com/rhishi99/OutLoud"
   },
   "plugins": [
     {

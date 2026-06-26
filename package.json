@@ -9,11 +9,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/rhishi99/claude-code-voice.git"
+    "url": "https://github.com/rhishi99/OutLoud.git"
   },
-  "homepage": "https://github.com/rhishi99/claude-code-voice#readme",
+  "homepage": "https://github.com/rhishi99/OutLoud#readme",
   "bugs": {
-    "url": "https://github.com/rhishi99/claude-code-voice/issues"
+    "url": "https://github.com/rhishi99/OutLoud/issues"
   },
   "keywords": [
     "outloud",
