@@ -42,3 +42,6 @@ last-spoken.mp3
 
 # Git internal temp objects
 .git/objects/tmp_obj_*
+
+# Crash dumps
+*.stackdump
