@@ -1,4 +1,4 @@
-edge-tts
+﻿edge-tts
 playsound==1.2.2
-pyttsx3
-# kokoro / sounddevice / numpy paused (experimental; contributions welcome)
+# Optional fallback
+# pyttsx3
