@@ -33,7 +33,7 @@ A lightweight, on-demand (and optional auto-narration) text-to-speech speaker pl
 flowchart LR
     A[LLM reply] --> B[Stop hook saves text]
     B --> C[Hotkey / /speak / autoSpeak]
-    C --> D[Neural voice<br/>(edge-tts default)]
+    C --> D["Neural voice (edge-tts default)"]
 ```
 
 ---
@@ -57,7 +57,7 @@ flowchart LR
 [ assets/demo.mp4  —  terminal capture + voice of /speak last and /speak on  ]
 ```
 
-See it in action in the [interactive visualizer](voice-plugin-visualizer.html) too.
+See it in action in the [interactive visualizer](https://rhishi99.github.io/OutLoud/voice-plugin-visualizer.html) too.
 
 ---
 
@@ -65,8 +65,8 @@ See it in action in the [interactive visualizer](voice-plugin-visualizer.html) t
 
 This project was **designed and built end-to-end with [Grok Build](https://grok.com)** — full credit to Grok for the architecture, the iterative build loop, the multi-agent docs sweep, and the live tooling. The entire build journey (every milestone, every fix) is captured in an interactive timeline:
 
-- 📈 **[`build-journey.html`](build-journey.html)** — the Grok Build story, milestone by milestone
-- 🎛️ **[`voice-plugin-visualizer.html`](voice-plugin-visualizer.html)** — live architecture + interactive config console
+- 📈 **[build-journey.html](https://rhishi99.github.io/OutLoud/build-journey.html)** — the Grok Build story, milestone by milestone (live, rendered)
+- 🎛️ **[voice-plugin-visualizer.html](https://rhishi99.github.io/OutLoud/voice-plugin-visualizer.html)** — live architecture + interactive config console
 
 > Open either file in a browser to see how it came together.
 
@@ -488,7 +488,7 @@ Use your window manager's native keybinding tool if preferred.
 - Both agents share the same `config.json`, engines, and capture file — one backend, two (soon more) agents.
 - Speaking is always explicit (hotkey, CLI, `/speak`) **or** opt-in via `autoSpeak`. Nothing speaks by default.
 
-See the [interactive visualizer](voice-plugin-visualizer.html) for the full flow diagram.
+See the [interactive visualizer](https://rhishi99.github.io/OutLoud/voice-plugin-visualizer.html) for the full flow diagram.
 
 ---
 
