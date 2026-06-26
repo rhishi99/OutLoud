@@ -96,7 +96,7 @@ This project was **designed and built end-to-end with [Grok Build](https://grok.
 
 ```bash
 /plugin marketplace add rhishi99/OutLoud
-/plugin install speaker@speaker
+/plugin install speaker@outloud
 ```
 
 ### Option B — Clone & set up locally (incl. WSL)
@@ -155,7 +155,7 @@ python3 scripts/speaker.py "Hello from OutLoud, running inside WSL"
 ```bash
 # from inside Claude Code, in this repo:
 /plugin marketplace add rhishi99/OutLoud
-/plugin install speaker@speaker
+/plugin install speaker@outloud
 ```
 
 Then ask Claude anything and run:
