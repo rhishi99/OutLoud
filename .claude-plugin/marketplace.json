@@ -1,18 +1,18 @@
 ﻿{
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "claude-code-voice",
-  "description": "Lightweight on-demand speaker for Claude Code. edge-tts + playsound default for clean neural voice (no popup). Zero extra tokens. Hotkey, /speak, or status line to hear last output.",
+  "name": "outloud",
+  "description": "OutLoud — give your AI coding agent a voice. On-demand + autoSpeak auto-narration. edge-tts + playsound default. Zero tokens. Hotkey, /speak, status badge.",
   "owner": {
-    "name": "claude-code-voice",
+    "name": "OutLoud",
     "url": "https://github.com/rhishi99/claude-code-voice"
   },
   "plugins": [
     {
       "name": "speaker",
-      "description": "Terminal speaker with Stop hook capture, status badge, and /speak support. Clean edge-tts + playsound playback.",
+      "description": "OutLoud speaker: Stop hook capture, autoSpeak, hardened status badge, /speak on|off|stop|last. Same backend for Claude Code + Grok Build.",
       "source": "./",
       "category": "productivity",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }

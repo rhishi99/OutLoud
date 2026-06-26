@@ -1,6 +1,6 @@
 ﻿#!/usr/bin/env python3
 """
-claude-code-voice speaker.py
+OutLoud speaker.py (formerly claude-code-voice)
 
 Configurable, natural-sounding TTS for Claude Code (and Grok Build) output.
 "just a read out of claude code" — zero extra LLM tokens.
@@ -86,6 +86,11 @@ DEFAULT_CONFIG = {
     "strip_code": True,
     "max_chars": 6500,
     "prefer_natural": True,  # unused hint
+    # autoSpeak (auto-narration) - opt-in, hardened for hooks
+    "autoSpeak": False,
+    "autoSpeakMaxChars": 1200,
+    "autoSpeakSkipCodeBlocks": True,
+    "autoSpeakMode": "full",  # "full" | "summary" | "first-paragraph"
 }
 
 def load_config() -> dict:
@@ -143,6 +148,67 @@ def clean_text(text: str, strip_code: bool = True) -> str:
         t = t[:maxc] + " ... [truncated]"
 
     return t
+
+
+def process_for_autospeak(text: str, cfg: dict) -> str:
+    """Apply autoSpeak rules: skip or strip code blocks, obey max + mode.
+    Used by Stop hook (fire-and-forget) and /speak auto paths.
+    Never blocks; caller is responsible for spawning detached.
+    """
+    if not text:
+        return ""
+    t = text
+
+    skip_blocks = cfg.get("autoSpeakSkipCodeBlocks", True)
+    if skip_blocks:
+        # Completely remove fenced code blocks for auto-narration
+        t = re.sub(r"```[\s\S]*?```", "", t)
+        # Also strip inline code markers lightly
+        t = re.sub(r"`([^`]+)`", r"\1", t)
+    else:
+        t = re.sub(r"```[\s\S]*?```", "[code block]", t)
+        t = re.sub(r"`([^`]+)`", r"\1", t)
+
+    # Strip markdown images / links
+    t = re.sub(r"!\[[^\]]*\]\([^)]+\)", "", t)
+    t = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", t)
+
+    # Normalize whitespace but preserve paragraph structure for mode logic
+    t = re.sub(r"[ \t]+", " ", t)
+    t = re.sub(r"\n{3,}", "\n\n", t).strip()
+
+    max_chars = int(cfg.get("autoSpeakMaxChars", 1200))
+    mode = cfg.get("autoSpeakMode", "full")
+
+    if len(t) <= max_chars:
+        return t.strip()
+
+    if mode == "first-paragraph":
+        # Up to first blank line or cutoff
+        parts = re.split(r"\n\s*\n", t, maxsplit=1)
+        candidate = parts[0] if parts else t
+        if len(candidate) > max_chars:
+            candidate = candidate[:max_chars].rsplit(" ", 1)[0] + "..."
+        return candidate.strip()
+    elif mode == "summary":
+        # first sentence + last sentence (simple . ! ? split)
+        sentences = re.split(r"(?<=[.!?])\s+", t)
+        if len(sentences) <= 2:
+            s = t[:max_chars]
+        else:
+            first = sentences[0]
+            last = sentences[-1]
+            combined = (first + " ... " + last).strip()
+            if len(combined) > max_chars:
+                combined = combined[:max_chars].rsplit(" ", 1)[0] + "..."
+            s = combined
+        return s.strip()
+    else:  # "full" but still respect max
+        s = t[:max_chars]
+        if len(t) > max_chars:
+            s = s.rsplit(" ", 1)[0] + "..."
+        return s.strip()
+
 
 # ---------------- Engines ----------------
 
@@ -417,6 +483,32 @@ def list_native_voices_hint():
     print("  - macOS: 'say -v ?' in terminal to list.")
     print("  - Linux: espeak-ng --voices or similar.")
 
+
+def _best_effort_stop_playback():
+    """Best effort stop for /speak stop. Kills likely player / TTS child processes.
+    Not guaranteed (depends on engine + platform). Safe to call.
+    """
+    system = platform.system()
+    try:
+        if system == "Windows":
+            # Kill python speakers and common audio players (non-fatal)
+            for pat in ["python* *speaker.py", "python* *speak", "cmd* /c start *last-spoken", "afplay", "mpg123", "ffplay"]:
+                subprocess.run(["taskkill", "/F", "/IM", "python.exe", "/T"], capture_output=True)
+                subprocess.run(["taskkill", "/F", "/FI", f"IMAGENAME eq python.exe", "/T"], capture_output=True)
+            # Also try to stop SAPI if stuck (harder, restart synth not easy)
+            print("[speaker] Windows stop attempted (taskkill on python TTS processes)")
+        elif system == "Darwin":
+            subprocess.run(["pkill", "-f", "afplay"], capture_output=True)
+            subprocess.run(["pkill", "-f", "say"], capture_output=True)
+            print("[speaker] macOS stop attempted")
+        else:
+            for p in ["mpg123", "ffplay", "aplay", "play", "espeak", "espeak-ng", "spd-say"]:
+                subprocess.run(["pkill", "-f", p], capture_output=True)
+            print("[speaker] Linux stop attempted")
+    except Exception as e:
+        print(f"[speaker] stop best-effort encountered: {e}")
+
+
 # ---------------- Main ----------------
 
 ENGINES = {
@@ -428,7 +520,7 @@ ENGINES = {
 
 def main():
     parser = argparse.ArgumentParser(description="Configurable speaker for Claude Code / Grok output")
-    parser.add_argument("text", nargs="?", help="Text to speak (or use --last / - for stdin)")
+    parser.add_argument("text", nargs="?", help="Text to speak (or use --last / - for stdin). Special: on|off|stop|last for /speak surface")
     parser.add_argument("--last", action="store_true", help="Speak the last captured response")
     parser.add_argument("--engine", choices=list(ENGINES.keys()), help="Override engine")
     parser.add_argument("--voice", help="Override voice")
@@ -436,8 +528,10 @@ def main():
     parser.add_argument("--volume", type=float, help="Volume 0-1")
     parser.add_argument("--config", action="store_true", help="Print current config and exit")
     parser.add_argument("--set", nargs=2, metavar=("KEY", "VALUE"), action="append",
-                        help="Set a config value (e.g. --set engine edge-tts)")
+                        help="Set a config value (e.g. --set engine edge-tts or --set autoSpeak true)")
     parser.add_argument("--list-voices", action="store_true", help="List available voices for the engine (edge-tts and pyttsx3 have many)")
+    parser.add_argument("--stop", action="store_true", help="Best-effort kill current playback (for /speak stop)")
+    parser.add_argument("--autospeak", choices=["on", "off"], help="Quick toggle for autoSpeak (used by /speak)")
 
     args = parser.parse_args()
     cfg = load_config()
@@ -468,13 +562,26 @@ def main():
         print("Config updated:", json.dumps(cfg, indent=2))
         return
 
+    # Quick autospeak toggle (for /speak on|off)
+    if args.autospeak:
+        cfg["autoSpeak"] = (args.autospeak == "on")
+        save_config(cfg)
+        print(f"autoSpeak {'enabled' if cfg['autoSpeak'] else 'disabled'}")
+        return
+
+    # Best-effort stop playback
+    if args.stop:
+        _best_effort_stop_playback()
+        print("[speaker] stop requested (best-effort)")
+        return
+
     if args.config:
         print(json.dumps(cfg, indent=2))
         return
 
     # Simple interactive console mode (great for local testing)
     if not args.text and not args.last and not args.set and len(sys.argv) == 1:
-        print("\n🔊 claude-code-voice interactive configurator")
+        print("\n🔊 OutLoud interactive configurator")
         print("Current:", json.dumps({k: cfg[k] for k in ['engine','voice','rate','volume']}, indent=2))
         print("\nOptions:")
         print("  1) Change engine")
@@ -509,13 +616,29 @@ def main():
 
     # Determine text
     text = None
-    if args.last:
+    # Support /speak last | on | off | stop as positional (parsed by speak command surface)
+    special = (args.text or "").strip().lower() if args.text else ""
+    if args.stop or special == "stop":
+        _best_effort_stop_playback()
+        print("[speaker] stop (best-effort)")
+        return
+    if special == "on":
+        cfg["autoSpeak"] = True
+        save_config(cfg)
+        print("autoSpeak enabled")
+        return
+    if special == "off":
+        cfg["autoSpeak"] = False
+        save_config(cfg)
+        print("autoSpeak disabled")
+        return
+    if args.last or special == "last":
         last_file = get_last_path()
         if last_file.exists():
             text = last_file.read_text(encoding="utf-8")
     elif args.text == "-" or (not args.text and not sys.stdin.isatty()):
         text = sys.stdin.read()
-    elif args.text:
+    elif args.text and special not in ("on", "off", "last", "stop"):
         text = args.text
 
     if not text:

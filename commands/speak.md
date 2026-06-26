@@ -1,19 +1,29 @@
 ---
-description: Speak the most recent Claude response aloud using the speaker plugin.
-argument-hint: "[optional text to speak instead]"
+description: OutLoud speaker control. /speak [text|last|on|off|stop]
+argument-hint: "[text to speak | last | on | off | stop]"
 ---
 
-You are controlling the speaker plugin.
+You are controlling the OutLoud (speaker) plugin.
 
-1. If the user gave extra text after /speak, speak exactly that.
-2. Otherwise, tell the user to trigger the speaker:
-   - Run the provided speaker script/hotkey (recommended), or
-   - Say "speak it" again and we will use the last captured output.
+Supported forms (parse args after /speak):
 
-The last response is already captured automatically by the plugin's Stop hook into a file that the speak CLI reads.
+- /speak                  -> speak last saved response (via backend)
+- /speak last             -> same (explicit)
+- /speak "some words"     -> speak the provided text immediately
+- /speak on               -> enable autoSpeak (auto-narration after Stop). Run: python scripts/speaker.py --autospeak on   OR --set autoSpeak true. Confirm.
+- /speak off              -> disable autoSpeak. Run python scripts/speaker.py --autospeak off. Confirm state.
+- /speak stop             -> best-effort stop current playback. Run: python scripts/speaker.py --stop
 
-Respond briefly like: "🔊 Playing last response via speaker..."
+Implementation:
+1. For "on"/"off": use terminal to execute `python scripts/speaker.py --autospeak on` (or off). Then tell user the result and current status.
+2. For "stop": run `python scripts/speaker.py --stop`. Report "attempted stop".
+3. For last / text: remind user (or execute if allowed) to use hotkey or the speak script: `python scripts/speaker.py --last` or pass text.
+   Respond briefly: "🔊 Playing last response via OutLoud..."
 
-If there was no previous output captured yet, say "No output captured yet. Ask me something and then use the speaker hotkey or /speak."
+Always respect:
+- OUTLOUD_MUTE=1 disables all speech.
+- Config (autoSpeak etc) is live via the python speaker.py --config tool.
 
-Never output the full text yourself unless the user explicitly asks you to paste it for copying.
+If no previous capture: "No output captured yet. Ask something then use hotkey or /speak."
+
+Never dump the full assistant text into chat unless user asks to copy it. Keep responses short + actionable. Use the real CLI for toggles so config persists.

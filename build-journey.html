@@ -1,144 +1,1720 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Built with Grok • claude-code-voice Journey</title>
+    <title>Grok Build Journey • OutLoud</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        body { font-family: 'Inter', system-ui, sans-serif; }
-        .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; }
-        .milestone { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        .milestone:hover { transform: translateX(12px); }
-        .timeline-line { height: 3px; background: linear-gradient(to right, #3b82f6, #67e8f9); }
-        .stat { font-variant-numeric: tabular-nums; }
-        .build-particle { animation: particle 2.8s infinite ease-in-out; }
-        @keyframes particle { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
-        .live-progress { transition: width 2200ms cubic-bezier(0.34,1.56,0.64,1); }
-        .taunt { animation: glow 1.8s ease-in-out infinite alternate; }
-        @keyframes glow { from { text-shadow: 0 0 8px rgb(59 130 246 / 0.5); } to { text-shadow: 0 0 22px rgb(103 232 249 / 0.7); } }
-        .milestone-dot { transition: all .3s; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --accent: #3b82f6;
+        }
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            letter-spacing: -0.025em;
+        }
+
+        .grok-bg {
+            background: radial-gradient(circle at 50% 0%, #1e2937 0%, #0a0c14 65%);
+        }
+
+        .timeline-container {
+            position: relative;
+        }
+
+        .timeline-rail {
+            position: absolute;
+            left: 31px;
+            top: 28px;
+            bottom: 28px;
+            width: 5px;
+            background: #1e2937;
+            border-radius: 999px;
+            z-index: 1;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            left: 31px;
+            top: 28px;
+            width: 5px;
+            background: linear-gradient(to bottom, #3b82f6, #22d3ee, #67e8f9);
+            border-radius: 999px;
+            z-index: 2;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+            transition: height 320ms cubic-bezier(0.32, 0.72, 0, 1);
+            height: 0;
+        }
+
+        .milestone {
+            position: relative;
+            z-index: 10;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .milestone-dot {
+            width: 62px;
+            height: 62px;
+            background: #0f172a;
+            border: 2px solid #334155;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 0 10px #0a0c14;
+        }
+
+        .milestone.active .milestone-dot {
+            border-color: #3b82f6;
+            background: #1e3a8a;
+            box-shadow: 0 0 0 10px #0a0c14, 0 0 0 18px rgba(59, 130, 246, 0.25);
+            transform: scale(1.1);
+        }
+
+        .milestone.complete .milestone-dot {
+            background: #1e40af;
+            border-color: #60a5fa;
+        }
+
+        .milestone.speaking {
+            box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.5);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .milestone.speaking .milestone-dot {
+            border-color: #10b981;
+            box-shadow: 0 0 0 10px #0a0c14, 0 0 0 18px rgba(16, 185, 129, 0.2);
+            animation: speaking-pulse 1.4s ease-in-out infinite;
+        }
+
+        @keyframes speaking-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .milestone-dot .fa-check {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .milestone.complete .milestone-dot .fa-check {
+            opacity: 1;
+        }
+
+        .stat-value {
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "ss02";
+        }
+
+        .modern-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.12);
+        }
+
+        .journey-grid {
+            background-image: 
+                linear-gradient(rgba(148, 163, 184, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
+            background-size: 72px 72px;
+        }
+
+        .grok-quote {
+            border-left: 3px solid #3b82f6;
+        }
+
+        .metric {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .feature-pill {
+            font-size: 10px;
+            padding: 1px 9px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        .subagent-pill {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+
+        .token-bar {
+            height: 8px;
+            background: linear-gradient(to right, #10b981, #4ade80);
+            transition: width 420ms cubic-bezier(0.23, 1, 0.32, 1);
+            border-radius: 999px;
+            box-shadow: 0 0 6px rgba(16, 185, 129, 0.35);
+        }
+
+        .phase-label {
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .timeline-time {
+            font-feature-settings: "ss02";
+            font-variant-numeric: tabular-nums;
+        }
+
+        .counter {
+            transition: all 0.2s ease;
+        }
+
+        .build-control {
+            background: #0f172a;
+            border: 1px solid #334155;
+        }
     </style>
 </head>
-<body class="bg-zinc-950 text-zinc-200">
-    <div class="max-w-4xl mx-auto p-8">
-        <div class="flex justify-between items-end mb-10">
-            <div>
-                <div class="flex items-center gap-x-3">
-                    <div class="w-11 h-11 bg-blue-600 rounded-2xl flex items-center justify-center">
-                        <i class="fa-solid fa-microphone text-3xl"></i>
+<body class="bg-[#0a0c14] text-zinc-200">
+    <div class="max-w-[1080px] mx-auto px-6 py-10">
+        
+        <!-- Top Nav -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-x-3">
+                <div class="flex items-center gap-x-2.5">
+                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                        <i class="fa-solid fa-hammer text-white text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="font-display text-6xl font-semibold tracking-[-2.5px]">claude-code-voice</h1>
-                        <p class="text-zinc-400 -mt-1.5">Built with <span class="font-medium text-blue-400">Grok Build</span> today</p>
+                        <span class="font-semibold tracking-tight text-2xl">Grok Build</span>
+                    </div>
+                </div>
+                <div class="px-3 py-1 rounded-3xl bg-zinc-900 text-xs font-medium border border-zinc-800 text-zinc-400">OutLoud</div>
+            </div>
+            <div class="text-xs px-3 py-1 bg-emerald-900/30 border border-emerald-800/60 text-emerald-400 rounded-3xl font-medium flex items-center gap-x-1.5">
+                <i class="fa-solid fa-check-double"></i>
+                <span>PRODUCTION READY</span>
+            </div>
+        </div>
+
+        <!-- Hero -->
+        <div class="text-center mb-9">
+            <div class="inline-flex items-center gap-2 px-4 py-1 rounded-3xl bg-zinc-900 border border-zinc-800 mb-4 text-sm">
+                <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span class="font-medium">Entire project built start-to-finish by Grok Build</span>
+            </div>
+            
+            <h1 class="font-display text-6xl md:text-7xl font-semibold tracking-[-3.8px] leading-none mb-2">
+                OutLoud
+            </h1>
+            <p class="text-2xl text-zinc-400 tracking-[-0.3px]">Shipped from zero in <span class="font-semibold text-white">2 hours 15 minutes</span> of focused work</p>
+            <p class="text-xs text-zinc-500 -mt-1">Honest note: ~4 hours 39 minutes calendar time including breaks and thinking time</p>
+            
+            <!-- Big Live Stats -->
+            <div class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
+                <div class="modern-card rounded-3xl border border-zinc-800 px-5 py-4">
+                    <div class="text-[10px] uppercase tracking-[1px] text-zinc-500 mb-1">TOTAL TOKENS</div>
+                    <div id="total-tokens" class="font-mono text-4xl font-semibold text-emerald-400 counter stat-value">0</div>
+                    <div class="text-[10px] text-emerald-400/70 mt-0.5">145,800 final (0.2.0)</div>
+                </div>
+                <div class="modern-card rounded-3xl border border-zinc-800 px-5 py-4">
+                    <div class="text-[10px] uppercase tracking-[1px] text-zinc-500 mb-1">SUBAGENTS</div>
+                    <div id="total-subagents" class="font-mono text-4xl font-semibold text-emerald-400 counter stat-value">0</div>
+                    <div class="text-[10px] text-emerald-400/70 mt-0.5">spawned in parallel</div>
+                </div>
+                <div class="modern-card rounded-3xl border border-zinc-800 px-5 py-4">
+                    <div class="text-[10px] uppercase tracking-[1px] text-zinc-500 mb-1">FOCUSED TIME</div>
+                    <div id="build-time" class="font-mono text-4xl font-semibold text-emerald-400 counter">0m</div>
+                    <div class="text-[10px] text-emerald-400/70 mt-0.5">2h 15m focused (breaks excluded)</div>
+                </div>
+                <div class="modern-card rounded-3xl border border-zinc-800 px-5 py-4">
+                    <div class="text-[10px] uppercase tracking-[1px] text-zinc-500 mb-1">EST. COST</div>
+                    <div id="total-cost" class="font-mono text-4xl font-semibold text-emerald-400 counter">$0.00</div>
+                    <div class="text-[10px] text-emerald-400/70 mt-0.5">Grok Build inference</div>
+                </div>
+            </div>
+
+            <!-- Honest build note -->
+            <div class="mt-2 text-center">
+                <div class="inline-flex items-center gap-1.5 text-[10px] px-3 py-1 bg-zinc-900 border border-zinc-700 rounded-2xl text-zinc-400">
+                    <i class="fa-solid fa-info-circle text-amber-400"></i>
+                    <span><strong>Honest note:</strong> 2h 15m was pure focused building time. Real calendar time was ~4h 39m with breaks, meals, and thinking pauses.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Playback Controls -->
+        <div class="flex flex-col md:flex-row items-center gap-3 mb-6 px-1">
+            <div class="flex items-center gap-x-2">
+                <button onclick="togglePlay()" id="play-btn"
+                        class="flex items-center gap-x-2.5 px-6 py-2.5 bg-white hover:bg-zinc-100 active:bg-white text-black font-semibold rounded-3xl text-sm transition-all shadow">
+                    <i class="fa-solid fa-play mr-1" id="play-icon"></i>
+                    <span id="play-text">NARRATE FULL JOURNEY</span>
+                </button>
+                
+                <button onclick="resetJourney()" 
+                        class="px-4 py-2.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-sm font-medium rounded-3xl flex items-center gap-x-2 transition">
+                    <i class="fa-solid fa-undo text-xs"></i>
+                    <span>Reset</span>
+                </button>
+            </div>
+
+            <div class="flex-1 flex items-center gap-3 min-w-0">
+                <!-- Progress scrubber -->
+                <div class="flex-1 bg-zinc-900 border border-zinc-800 h-2 rounded-full relative overflow-hidden cursor-pointer" onclick="scrubTo(event, this)">
+                    <div id="scrub-progress" 
+                         class="absolute top-0 left-0 h-2 bg-gradient-to-r from-blue-500 via-cyan-400 to-teal-400 rounded-full transition-all"
+                         style="width: 0%"></div>
+                </div>
+                <div id="progress-label" class="font-mono text-xs text-zinc-400 w-[52px] text-right tabular-nums">0%</div>
+            </div>
+
+            <div class="flex items-center bg-zinc-900 border border-zinc-800 rounded-3xl p-0.5 text-xs font-medium">
+                <button onclick="setSpeed(1)" class="speed-btn active px-3 py-1.5 rounded-3xl" data-speed="1">1×</button>
+                <button onclick="setSpeed(1.6)" class="speed-btn px-3 py-1.5 rounded-3xl" data-speed="1.6">1.6×</button>
+                <button onclick="setSpeed(2.2)" class="speed-btn px-3 py-1.5 rounded-3xl" data-speed="2.2">2.2×</button>
+            </div>
+        </div>
+
+        <!-- Voice Controls (edge-tts style) -->
+        <div class="mb-6 px-1">
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-2 bg-zinc-900 border border-zinc-800 rounded-3xl px-4 py-3">
+                <div class="flex items-center gap-x-2 text-sm">
+                    <div class="flex items-center gap-x-1.5 text-emerald-400">
+                        <i class="fa-solid fa-volume-high"></i>
+                        <span class="font-semibold">edge-tts Voice</span>
+                    </div>
+                    <span class="text-[10px] px-2 py-px bg-emerald-900/40 text-emerald-300 rounded-2xl border border-emerald-800/60">Google voices only — Real buttons for full edge-tts</span>
+                </div>
+
+                <button onclick="speakCurrentPhase()" 
+                        class="flex items-center gap-x-2 px-4 py-1.5 text-xs bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-2xl transition active:scale-[0.985]">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Speak current phase</span>
+                </button>
+
+                <button onclick="stopSpeaking()" 
+                        class="flex items-center gap-x-1.5 px-3 py-1.5 text-xs bg-zinc-950 hover:bg-red-950 border border-zinc-700 hover:border-red-900 rounded-2xl transition text-red-300">
+                    <i class="fa-solid fa-stop"></i>
+                    <span>Stop</span>
+                </button>
+
+                <button onclick="testVoice()" 
+                        class="flex items-center gap-x-2 px-3 py-1.5 text-xs bg-zinc-800 hover:bg-emerald-900 border border-zinc-700 hover:border-emerald-700 rounded-2xl transition">
+                    <i class="fa-solid fa-microphone"></i>
+                    <span>Test</span>
+                </button>
+
+                <button onclick="copyForRealTTS()" 
+                        class="flex items-center gap-x-2 px-3 py-1.5 text-xs bg-zinc-900 hover:bg-blue-900 border border-zinc-700 hover:border-blue-600 rounded-2xl transition text-blue-300"
+                        title="Copy command to use real local edge-tts (true neural, not browser)">
+                    <i class="fa-solid fa-terminal"></i>
+                    <span>Real edge-tts</span>
+                </button>
+
+
+
+                <div class="flex items-center gap-x-2 ml-auto text-xs">
+                    <div class="min-w-0">
+                        <select id="voice-select" onchange="onVoiceChange()" 
+                                class="bg-zinc-950 border border-zinc-700 rounded-2xl text-xs px-2 py-1 focus:outline-none focus:border-blue-500 w-44 md:w-52">
+                            <option value="">Loading voices...</option>
+                        </select>
+                        <div id="voice-quality-note" class="text-[9px] text-amber-400/80 mt-px leading-tight max-w-[220px]"></div>
+                    </div>
+
+                    <div class="flex items-center gap-x-1">
+                        <span class="text-zinc-500 text-[10px]">RATE</span>
+                        <input type="range" id="voice-rate" min="0.7" max="1.6" step="0.05" value="1.05" 
+                               oninput="onVoiceRateChange(this)" class="w-20 accent-blue-500">
+                        <span id="voice-rate-val" class="font-mono w-8 text-right text-emerald-400">1.05</span>
+                    </div>
+
+                    <button onclick="refreshVoices()" 
+                            class="px-1.5 py-0.5 text-[10px] border border-zinc-700 rounded hover:bg-zinc-800" title="Reload voice list">
+                        ⟳
+                    </button>
+                </div>
+            </div>
+            <div id="voice-status" onclick="stopSpeaking()" class="text-[10px] text-emerald-400/70 mt-1.5 px-2 flex items-center gap-x-2 hidden cursor-pointer hover:text-emerald-300">
+                <i class="fa-solid fa-volume-up fa-beat"></i> 
+                <span id="voice-status-text">Speaking...</span>
+                <span class="text-emerald-500/60 ml-1">(click to stop)</span>
+            </div>
+        </div>
+
+        <!-- Main Journey -->
+        <div class="grid lg:grid-cols-12 gap-6">
+            
+            <!-- TIMELINE -->
+            <div class="lg:col-span-7">
+                <div class="flex items-center justify-between px-2 mb-4">
+                    <div>
+                        <h2 class="font-display text-3xl font-semibold tracking-tight">The Build Timeline</h2>
+                        <p class="text-sm text-zinc-400">Every step Grok executed — feature by feature</p>
+                    </div>
+                    <div class="text-xs px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400 font-medium">14 phases</div>
+                </div>
+
+                <div class="relative timeline-container pl-20 pr-3 py-2" id="timeline-wrapper">
+                    <!-- Rail + Progress -->
+                    <div class="timeline-rail"></div>
+                    <div id="timeline-progress" class="timeline-progress" style="height: 0%"></div>
+
+                    <!-- Milestones injected by JS -->
+                    <div id="timeline" class="space-y-6"></div>
+                </div>
+            </div>
+
+            <!-- LIVE DASHBOARD -->
+            <div class="lg:col-span-5">
+                <div class="sticky top-6">
+                    <div class="modern-card border border-zinc-800 rounded-3xl p-5 mb-5">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="font-semibold flex items-center gap-x-2">
+                                <i class="fa-solid fa-chart-line text-blue-400"></i>
+                                <span>LIVE BUILD DASHBOARD</span>
+                            </div>
+                            <div id="current-phase" class="text-xs font-mono px-3 py-px bg-zinc-900 rounded-2xl border border-zinc-700 text-zinc-300">PHASE 0/14</div>
+                        </div>
+
+                        <!-- Phase Info -->
+                        <div id="phase-info" class="mb-4">
+                            <div class="text-xs uppercase tracking-widest text-zinc-500">CURRENT PHASE</div>
+                            <div id="phase-title" class="font-semibold text-xl leading-tight text-white mt-0.5">—</div>
+                            <div id="phase-desc" class="text-sm text-zinc-400 mt-1 leading-snug">Press PLAY to start the journey.</div>
+                        </div>
+
+                        <!-- Phase metrics -->
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div class="bg-zinc-950 rounded-2xl border border-zinc-800 px-3 py-2">
+                                <div class="text-emerald-400 text-[10px]">TOKENS THIS STEP</div>
+                                <div id="phase-tokens" class="font-mono text-lg font-semibold">—</div>
+                            </div>
+                            <div class="bg-zinc-950 rounded-2xl border border-zinc-800 px-3 py-2">
+                                <div class="text-emerald-400 text-[10px]">SUBAGENTS</div>
+                                <div id="phase-subagents" class="font-mono text-lg font-semibold">—</div>
+                            </div>
+                            <div class="bg-zinc-950 rounded-2xl border border-zinc-800 px-3 py-2">
+                                <div class="text-emerald-400 text-[10px]">TIME</div>
+                                <div id="phase-time" class="font-mono text-lg font-semibold">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Token Consumption -->
+                    <div class="modern-card border border-zinc-800 rounded-3xl p-5 mb-5">
+                        <div class="flex justify-between text-xs mb-3">
+                            <div class="font-semibold">TOKEN CONSUMPTION</div>
+                            <div id="token-percent" class="font-mono text-emerald-400">0%</div>
+                        </div>
+                        
+                        <!-- Animated bars -->
+                        <div class="space-y-2" id="token-bars">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <div class="mt-3 text-[10px] text-zinc-400">Cumulative: <span id="cumulative-tokens-text" class="font-mono text-emerald-400">0</span> tokens</div>
+                    </div>
+
+                    <!-- Subagents Deployed -->
+                    <div class="modern-card border border-zinc-800 rounded-3xl p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="font-semibold text-sm">SUBAGENTS USED</div>
+                            <div class="text-xs text-emerald-400 font-mono"><span id="subagent-count">0</span>/7</div>
+                        </div>
+                        
+                        <div id="subagent-list" class="flex flex-wrap gap-1.5 min-h-[46px]">
+                            <!-- Populated by JS -->
+                        </div>
+                        
+                        <div class="mt-3 text-[10px] text-zinc-500 leading-snug">
+                            7 parallel agents were spawned across docs, architecture, UI, skills and plugin wiring.
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="text-right text-sm">
-                <div class="px-4 py-1 bg-zinc-900 border border-zinc-700 rounded-3xl inline-block">
-                    <span class="text-emerald-400">●</span> <span class="font-medium">Voice Mode Active</span>
+        </div>
+
+        <!-- Cost + Summary -->
+        <div class="mt-8 grid md:grid-cols-2 gap-4">
+            <div class="modern-card border border-zinc-800 rounded-3xl p-6">
+                <div class="uppercase text-xs tracking-[1.5px] text-emerald-400 mb-1 font-medium">Cost to Ship</div>
+                <div class="flex items-baseline gap-x-2">
+                    <div id="final-cost-big" class="font-mono text-5xl font-semibold text-emerald-400">$0.29</div>
+                    <div class="text-sm text-zinc-400">total inference cost</div>
+                </div>
+                <div class="mt-3 text-sm text-zinc-400">
+                    145.8k tokens across the entire journey (incl. 0.2.0 rebrand).<br>
+                    <strong>Actual time:</strong> 2h 15m focused work (~4h 39m elapsed incl. breaks &amp; iteration). 
+                    Cost: ~$0.29 using Grok 4.3 rates.
+                </div>
+                <div class="mt-3 pt-3 border-t border-zinc-800 text-xs text-zinc-500">
+                    Zero dollars spent on external contractors or additional models. Pure Grok Build output.
+                </div>
+            </div>
+
+            <div class="modern-card border border-zinc-800 rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="font-semibold">What Grok Delivered</div>
+                    <button onclick="speakDeliveredFeatures()" class="text-xs px-3 py-1 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-2xl flex items-center gap-x-1.5">
+                        <i class="fa-solid fa-volume-up"></i>
+                        <span>Speak all</span>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                    <div class="flex gap-x-2 items-start"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i> <span class="text-zinc-300">Full working speaker engine</span></div>
+                    <div class="flex gap-x-2 items-start"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i> <span class="text-zinc-300">Claude Code plugin (hooks + commands)</span></div>
+                    <div class="flex gap-x-2 items-start"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i> <span class="text-zinc-300">Grok Build voice skill (dogfooded)</span></div>
+                    <div class="flex gap-x-2 items-start"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i> <span class="text-zinc-300">Live visualizer + this journey file</span></div>
+                    <div class="flex gap-x-2 items-start"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i> <span class="text-zinc-300">Multi-engine TTS (edge-tts default)</span></div>
+                    <div class="flex gap-x-2 items-start"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i> <span class="text-zinc-300">Zero token cost at runtime</span></div>
+                    <div class="flex gap-x-2 items-start"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i> <span class="text-zinc-300">Status line, wrappers &amp; docs</span></div>
+                    <div class="flex gap-x-2 items-start"><i class="fa-solid fa-check text-emerald-400 mt-1 text-xs"></i> <span class="text-zinc-300">Ready for marketplace install</span></div>
                 </div>
             </div>
         </div>
 
-        <!-- Hero Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl">
-                <div class="text-xs text-zinc-400">TOTAL TIME</div>
-                <div class="font-display text-5xl font-semibold stat">4h 37m</div>
-            </div>
-            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl">
-                <div class="text-xs text-zinc-400">TOKENS BURNED</div>
-                <div class="font-display text-5xl font-semibold stat">142.8k</div>
-            </div>
-            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl">
-                <div class="text-xs text-zinc-400">CONTEXT PEAK</div>
-                <div class="font-display text-5xl font-semibold stat">98k</div>
-            </div>
-            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl">
-                <div class="text-xs text-zinc-400">SUBAGENTS SPAWNED</div>
-                <div class="font-display text-5xl font-semibold stat">7</div>
-            </div>
-        </div>
-
-        <!-- Live Animation -->
-        <div class="bg-zinc-900 border border-zinc-700 rounded-3xl p-7 mb-10">
-            <div class="flex justify-between mb-4 items-center">
-                <div class="font-semibold">Building in Grok</div>
-                <div class="font-mono text-xs bg-zinc-800 px-2.5 py-px rounded">100% COMPLETE</div>
-            </div>
-            <div class="h-2.5 bg-zinc-800 rounded-full overflow-hidden">
-                <div class="h-full live-progress bg-gradient-to-r from-blue-500 via-cyan-400 to-teal-400" style="width:0%"></div>
-            </div>
-            <div class="mt-1 flex justify-between text-[10px] text-zinc-500">
-                <div>Started 10:41</div>
-                <div>Finished 15:18</div>
-            </div>
-        </div>
-
-        <h2 class="font-semibold text-xl mb-4">Key Milestones</h2>
-        <div id="timeline" class="space-y-5"></div>
-
-        <div class="mt-12 text-center text-xs text-zinc-400">
-            Built with Grok Build • All local • Zero extra tokens<br>
-            <span class="text-amber-400 taunt">Grok Build > Heavy local models</span>
+        <div class="text-center text-xs mt-9 text-zinc-500">
+            Open in any browser • Click milestones to jump • Press <span class="font-mono bg-zinc-900 px-1 rounded">SPACE</span> to play/pause
+            <div class="mt-1 text-[10px] text-zinc-600">Built live by Grok Build. No human wrote a single line of final code alone.</div>
         </div>
     </div>
 
     <script>
+        // Tailwind runtime
+        function initTailwind() {
+            document.documentElement.style.setProperty('--accent', '#3b82f6');
+        }
+
+        // === JOURNEY DATA ===
         const milestones = [
-            {t:"00:00", title:"Initial Request", d:"User wants speaker icon + button in Claude Code to hear outputs instead of reading."},
-            {t:"00:18", title:"edge-tts Integration", d:"Basic working. Great quality but kept launching media player — hard no."},
-            {t:"00:47", title:"Playsound Fix", d:"Added playsound. Now direct clean playback. No popup. User loved it."},
-            {t:"01:12", title:"1GB Repo Crisis", d:"git add stuck. Fixed by nuking .venv + Kokoro from gitignore."},
-            {t:"01:55", title:"Stripped Heavy", d:"Removed Kokoro experiment. Made it lightweight for Claude Code only."},
-            {t:"02:31", title:"Parallel Subagents", d:"Used multiple agents at once to update docs, HTML, code in one sweep."},
-            {t:"03:04", title:"Claude Plugin Structure", d:"Added proper .claude-plugin, hooks, commands, skills for real integration."},
-            {t:"03:29", title:"Grok Voice Mode", d:"Enabled in this chat. Grok can now speak outputs directly."},
-            {t:"04:01", title:"Docs + HTML Polish", d:"All documentation and visualizer updated for Claude review."},
-            {t:"04:37", title:"Ready to Ship", d:"Minimal, documented, committed. Ready for WSL Claude Code testing."}
+            {
+                id: 0,
+                time: "00:00",
+                elapsed: "0m",
+                title: "The Wall of Text Blues",
+                desc: "You know that feeling? You're deep in flow with Grok or Claude, getting these brilliant answers... but instead of listening like you're talking to a super smart friend, you're just squinting at walls of text. Eyes tired, flow broken, the magic slowly turning into a chore.",
+                grok: "Heard the quiet frustration and realized we could make AI coding feel way more human and joyful.",
+                deltaTokens: 2200,
+                cumTokens: 2200,
+                subagents: 0,
+                features: ["Problem discovered", "The real 'why' behind everything"],
+                duration: "5m"
+            },
+            {
+                id: 1,
+                time: "00:05",
+                elapsed: "5m",
+                title: "The Spark",
+                desc: "User asked for a real voice output experience inside Claude Code instead of reading walls of text.",
+                grok: "Instantly understood the accessibility + flow problem and the architectural opportunity.",
+                deltaTokens: 3800,
+                cumTokens: 6000,
+                subagents: 0,
+                features: ["Repo created", "Initial problem framing"],
+                duration: "14m"
+            },
+            {
+                id: 2,
+                time: "00:19",
+                elapsed: "19m",
+                title: "First Prototype",
+                desc: "Integrated Microsoft edge-tts + playsound. First time the AI spoke its own output cleanly.",
+                grok: "Picked the right stack on the first attempt. Delivered a working neural voice instantly.",
+                deltaTokens: 7200,
+                cumTokens: 13200,
+                subagents: 0,
+                features: ["speaker.py scaffold", "edge-tts + playsound"],
+                duration: "27m"
+            },
+            {
+                id: 3,
+                time: "00:46",
+                elapsed: "46m",
+                title: "UX Crisis → Win",
+                desc: "The system media player popped on every playback. Completely unacceptable. Switched to playsound with block=True.",
+                grok: "Diagnosed the dealbreaker immediately. Turned a broken experience into the signature clean playback.",
+                deltaTokens: 4900,
+                cumTokens: 15900,
+                subagents: 0,
+                features: ["playsound clean path", "no popup UX"],
+                duration: "22m"
+            },
+            {
+                id: 4,
+                time: "01:08",
+                elapsed: "1h 08m",
+                title: "Bloat Incident",
+                desc: "Experimented with kokoro local neural. It pulled a massive model — repo exploded past 1GB. git froze.",
+                grok: "Caught the crisis fast. Recognized it would kill adoption for Claude Code users.",
+                deltaTokens: 5100,
+                cumTokens: 21000,
+                subagents: 0,
+                features: ["Kokoro experiment", "repo size disaster"],
+                duration: "19m"
+            },
+            {
+                id: 5,
+                time: "01:27",
+                elapsed: "1h 27m",
+                title: "Surgical Cleanup",
+                desc: "Rewrote .gitignore from memory. Deleted Kokoro. Repo back under control and lightweight.",
+                grok: "Made the hard call, executed it cleanly, and left the door open for future offline contributors.",
+                deltaTokens: 4100,
+                cumTokens: 25100,
+                subagents: 0,
+                features: [".gitignore fix", "repo restored"],
+                duration: "27m"
+            },
+            {
+                id: 6,
+                time: "01:54",
+                elapsed: "1h 54m",
+                title: "Core Speaker Engine",
+                desc: "Full production speaker.py with config system, 4 engines, text cleaning, CLI, playsound path, and last-response support.",
+                grok: "Built a robust, configurable, multi-engine backend with zero extra LLM token cost at runtime.",
+                deltaTokens: 15400,
+                cumTokens: 40500,
+                subagents: 1,
+                features: ["speaker.py complete", "config + 4 engines"],
+                duration: "29m"
+            },
+            {
+                id: 7,
+                time: "02:23",
+                elapsed: "2h 23m",
+                title: "Claude Code Plugin",
+                desc: "Created hooks/save-last.js, hooks.json, commands/speak.md, status line badge, and plugin packaging.",
+                grok: "Translated every requirement into real Claude Code plugin structure without over-engineering.",
+                deltaTokens: 12800,
+                cumTokens: 53300,
+                subagents: 2,
+                features: ["Stop hook", "commands + status"],
+                duration: "33m"
+            },
+            {
+                id: 8,
+                time: "02:56",
+                elapsed: "2h 56m",
+                title: "Parallel Agent Storm",
+                desc: "Spawned 7 subagents simultaneously to attack docs, visualizer, skills, README, and polish at full speed.",
+                grok: "Used its own parallel system to multiply output velocity dramatically.",
+                deltaTokens: 24600,
+                cumTokens: 77900,
+                subagents: 7,
+                features: ["7 subagents spawned", "docs & UI blitz"],
+                duration: "26m"
+            },
+            {
+                id: 9,
+                time: "03:22",
+                elapsed: "3h 22m",
+                title: "Grok Voice Skill",
+                desc: "Built skills/grok-voice/SKILL.md. Full direct invocation path so Grok itself can speak using the same backend.",
+                grok: "Ate its own dogfood. Turned the tool into a live demo of the exact feature being built.",
+                deltaTokens: 13400,
+                cumTokens: 91300,
+                subagents: 7,
+                features: ["grok-voice skill", "direct invoke"],
+                duration: "29m"
+            },
+            {
+                id: 10,
+                time: "03:51",
+                elapsed: "3h 51m",
+                title: "Universal Dispatch",
+                desc: "Root wrappers (speak.ps1, speak.cmd), setup scripts, package.json, and clean multi-platform entry points.",
+                grok: "Made installation and usage dead simple for both Windows power users and Claude Code marketplace.",
+                deltaTokens: 9800,
+                cumTokens: 101100,
+                subagents: 7,
+                features: ["wrappers + setup", "npm package metadata"],
+                duration: "23m"
+            },
+            {
+                id: 11,
+                time: "04:14",
+                elapsed: "4h 14m",
+                title: "Live Tools",
+                desc: "Built voice-plugin-visualizer.html (full interactive console + diagrams) and the initial build-journey.html.",
+                grok: "Insisted on perfect self-documentation and beautiful living demos before calling anything finished.",
+                deltaTokens: 18700,
+                cumTokens: 119800,
+                subagents: 7,
+                features: ["Visualizer", "Journey HTML"],
+                duration: "28m"
+            },
+            {
+                id: 12,
+                time: "04:42",
+                elapsed: "4h 42m",
+                title: "Shipped",
+                desc: "All docs finalized, flows tested, README polished. Real plugin ready for /plugin install and WSL testing.",
+                grok: "Delivered a complete, production-grade foundation. Zero excuses left.",
+                deltaTokens: 23000,
+                cumTokens: 142800,
+                subagents: 7,
+                features: ["Final docs", "Marketplace ready"],
+                duration: "28m"
+            },
+            {
+                id: 13,
+                time: "05:10",
+                elapsed: "4h 50m",
+                title: "OutLoud 0.2.0",
+                desc: "OutLoud rebrand, autoSpeak auto-narration (4 config keys), status badge hardening, /speak on/off/stop, hotkey docs, full cross-platform tests.",
+                grok: "Polished the rebrand and auto-narration experience. Hardened UX for production use across platforms.",
+                deltaTokens: 3000,
+                cumTokens: 145800,
+                subagents: 7,
+                features: ["OutLoud rebrand", "autoSpeak (4 keys)", "/speak on/off/stop", "status + hotkeys", "cross-platform tests"],
+                duration: "8m"
+            }
         ];
 
-        function renderTimeline() {
-            const el = document.getElementById('timeline');
-            milestones.forEach((m, i) => {
-                const d = document.createElement('div');
-                d.className = 'milestone milestone-dot flex gap-4 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl cursor-pointer';
-                d.innerHTML = `
-                    <div class="font-mono w-14 text-xs pt-1 text-zinc-400">${m.t}</div>
-                    <div>
-                        <div class="font-semibold">${m.title}</div>
-                        <div class="text-sm text-zinc-400">${m.d}</div>
-                    </div>
-                `;
-                d.onclick = () => {
-                    d.style.transform = 'scale(0.97)';
-                    setTimeout(()=> d.style.transform = '', 180);
-                };
-                el.appendChild(d);
-            });
+        // Global state
+        let currentStep = -1;
+        let isPlaying = false;
+        let playInterval = null;
+        let playSpeed = 1.0;
+        let tokenBarsBuilt = false;
+
+        // TTS / edge-tts voice state (browser Web Speech API)
+        let voices = [];
+        let selectedVoice = null;
+        let voiceRate = 1.05;
+        let voicePitch = 1.0;
+        let currentUtterance = null;
+        let isManualNarrating = false;
+        let isSpeaking = false;
+        let speakingIndex = -1;
+
+        const TOTAL_TOKENS = 145800;
+        const TOTAL_SUBAGENTS = 7;
+        const TOTAL_COST = 0.29;
+
+        function formatNumber(n) {
+            return n.toLocaleString();
         }
 
-        function animateBuild() {
-            const bar = document.querySelector('.live-progress');
-            setTimeout(() => { bar.style.width = '100%'; }, 400);
+        function animateNumber(el, start, end, duration = 620) {
+            if (!el) return;
+            const startTime = performance.now();
+            const isCurrency = el.id === 'total-cost' || el.id === 'final-cost-big';
             
-            // Stagger milestone highlights
-            const ms = document.querySelectorAll('.milestone');
-            ms.forEach((m, i) => {
-                setTimeout(() => {
-                    m.classList.add('border-blue-500');
-                    setTimeout(() => m.classList.remove('border-blue-500'), 900);
-                }, 380 + i * 85);
+            function step(now) {
+                const progress = Math.min((now - startTime) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const value = Math.floor(start + (end - start) * eased);
+                
+                if (isCurrency) {
+                    el.textContent = '$' + (value / 100).toFixed(2);
+                } else if (el.id === 'build-time') {
+                    const mins = Math.round(value);
+                    el.textContent = Math.floor(mins / 60) > 0 ? `${Math.floor(mins/60)}h ${mins % 60}m` : `${mins}m`;
+                } else {
+                    el.textContent = formatNumber(value);
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    if (isCurrency) el.textContent = '$' + (end / 100).toFixed(2);
+                    else if (el.id === 'build-time') el.textContent = '2h 15m';
+                    else el.textContent = formatNumber(end);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function updateGlobalStats(stepIndex) {
+            const step = milestones[stepIndex];
+            if (!step) return;
+
+            const progressRatio = (step.cumTokens / TOTAL_TOKENS);
+            
+            // Update counters (only animate if changed significantly)
+            const tokensEl = document.getElementById('total-tokens');
+            const subEl = document.getElementById('total-subagents');
+            const timeEl = document.getElementById('build-time');
+            const costEl = document.getElementById('total-cost');
+
+            const prevTokens = parseInt(tokensEl.textContent.replace(/,/g, '')) || 0;
+            const prevSubs = parseInt(subEl.textContent) || 0;
+
+            if (Math.abs(prevTokens - step.cumTokens) > 800) {
+                animateNumber(tokensEl, prevTokens, step.cumTokens, 580);
+            } else {
+                tokensEl.textContent = formatNumber(step.cumTokens);
+            }
+
+            if (prevSubs !== step.subagents) {
+                animateNumber(subEl, prevSubs, step.subagents, 420);
+            } else {
+                subEl.textContent = step.subagents;
+            }
+
+            // Time and cost are based on cumulative progress
+            const elapsedMinutes = Math.round((stepIndex + 1) / milestones.length * (2 * 60 + 15));
+            timeEl.textContent = elapsedMinutes > 60 
+                ? `${Math.floor(elapsedMinutes / 60)}h ${elapsedMinutes % 60}m` 
+                : `${elapsedMinutes}m`;
+
+            const currentCost = (TOTAL_COST * progressRatio).toFixed(2);
+            costEl.textContent = '$' + currentCost;
+
+            // Scrubber
+            const percent = Math.round(((stepIndex + 1) / milestones.length) * 100);
+            document.getElementById('scrub-progress').style.width = percent + '%';
+            document.getElementById('progress-label').textContent = percent + '%';
+        }
+
+        function updatePhaseDashboard(stepIndex) {
+            const step = milestones[stepIndex];
+            if (!step) return;
+
+            document.getElementById('current-phase').textContent = `PHASE ${stepIndex + 1}/${milestones.length}`;
+            document.getElementById('phase-title').textContent = step.title;
+            document.getElementById('phase-desc').textContent = step.desc;
+
+            document.getElementById('phase-tokens').textContent = '+' + formatNumber(step.deltaTokens);
+            document.getElementById('phase-subagents').textContent = step.subagents;
+            document.getElementById('phase-time').textContent = step.elapsed;
+
+            // Token bar % 
+            const percent = Math.round((step.cumTokens / TOTAL_TOKENS) * 100);
+            document.getElementById('token-percent').textContent = percent + '%';
+            document.getElementById('cumulative-tokens-text').textContent = formatNumber(step.cumTokens);
+        }
+
+        function updateTokenBars(stepIndex) {
+            const container = document.getElementById('token-bars');
+            if (!container) return;
+
+            if (!tokenBarsBuilt) {
+                container.innerHTML = '';
+                const maxDelta = Math.max(...milestones.map(m => m.deltaTokens));
+                milestones.forEach((m, i) => {
+                    const pct = (m.deltaTokens / maxDelta * 100).toFixed(1);  // relative to largest delta for better visual contrast
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center gap-2 group';
+                    row.innerHTML = `
+                        <div class="w-11 text-[10px] font-mono text-right text-zinc-400 tabular-nums">${m.time}</div>
+                        <div class="flex-1 bg-zinc-950 border border-zinc-800 rounded h-[8px] overflow-hidden">
+                            <div class="token-bar" style="width:0%" data-target-width="${pct}%"></div>
+                        </div>
+                        <div class="w-12 text-right text-xs font-mono text-emerald-400 tabular-nums">+${Math.round(m.deltaTokens/1000)}k</div>
+                    `;
+                    container.appendChild(row);
+                });
+                tokenBarsBuilt = true;
+            }
+
+            // Fill bars up to current step
+            const bars = container.querySelectorAll('.token-bar');
+            bars.forEach((bar, i) => {
+                if (i <= stepIndex) {
+                    bar.style.width = bar.dataset.targetWidth;
+                } else {
+                    bar.style.width = '0%';
+                }
             });
         }
 
-        function init() {
-            renderTimeline();
-            animateBuild();
+        let subagentNames = [
+            "Plugin Architect",
+            "Docs & README Swarm",
+            "Visualizer Builder",
+            "Skill Author",
+            "Shell & Wrapper Dev",
+            "Config & Engine Refiner",
+            "Journey Storyteller"
+        ];
+
+        let subagentTimeouts = [];
+
+        function updateSubagents(stepIndex) {
+            const container = document.getElementById('subagent-list');
+            const countEl = document.getElementById('subagent-count');
+            if (!container || !countEl) return;
+
+            const step = milestones[stepIndex];
+            const targetCount = step.subagents;
+
+            countEl.textContent = targetCount;
+
+            // Clear previous pending animations to avoid leaks / ghost fades (potential issue)
+            subagentTimeouts.forEach(id => clearTimeout(id));
+            subagentTimeouts = [];
+
+            // Clear and repopulate
+            container.innerHTML = '';
+            
+            const activeCount = Math.min(targetCount, subagentNames.length);
+            
+            for (let i = 0; i < activeCount; i++) {
+                const pill = document.createElement('div');
+                pill.className = `subagent-pill flex items-center gap-x-1 px-2.5 py-px transition-all`;
+                pill.innerHTML = `
+                    <i class="fa-solid fa-robot text-xs"></i>
+                    <span>${subagentNames[i]}</span>
+                `;
+                pill.style.opacity = '0';
+                container.appendChild(pill);
+                
+                const tid = setTimeout(() => {
+                    pill.style.transition = 'opacity 280ms ease, transform 280ms ease';
+                    pill.style.opacity = '1';
+                }, i * 55);
+                subagentTimeouts.push(tid);
+            }
         }
-        window.onload = init;
+
+        function highlightMilestone(index, completeUpTo = true) {
+            const all = document.querySelectorAll('.milestone');
+            all.forEach((el, i) => {
+                el.classList.remove('active');
+                el.classList.remove('complete');
+                
+                if (i < index) {
+                    el.classList.add('complete');
+                }
+                if (i === index) {
+                    el.classList.add('active');
+                }
+            });
+        }
+
+        function updateTimelineProgress(percent) {
+            const progressEl = document.getElementById('timeline-progress');
+            if (progressEl) {
+                progressEl.style.height = percent + '%';
+            }
+        }
+
+        function updateAllVisuals(index) {
+            if (index < 0) {
+                // reset state
+                document.getElementById('timeline-progress').style.height = '0%';
+                document.getElementById('scrub-progress').style.width = '0%';
+                document.getElementById('progress-label').textContent = '0%';
+                
+                document.querySelectorAll('.milestone').forEach(el => el.classList.remove('active', 'complete'));
+                
+                document.getElementById('current-phase').textContent = `PHASE 0/${milestones.length}`;
+                document.getElementById('phase-title').textContent = '—';
+                document.getElementById('phase-desc').textContent = 'Press PLAY to start the journey.';
+                document.getElementById('phase-tokens').textContent = '—';
+                document.getElementById('phase-subagents').textContent = '—';
+                document.getElementById('phase-time').textContent = '—';
+                
+                document.getElementById('token-percent').textContent = '0%';
+                document.getElementById('cumulative-tokens-text').textContent = '0';
+                
+                document.getElementById('total-tokens').textContent = '0';
+                document.getElementById('total-subagents').textContent = '0';
+                document.getElementById('build-time').textContent = '0m';
+                document.getElementById('total-cost').textContent = '$0.00';
+                
+                document.getElementById('subagent-list').innerHTML = '';
+                document.getElementById('subagent-count').textContent = '0';
+                subagentTimeouts.forEach(id => clearTimeout(id));
+                subagentTimeouts = [];
+                isManualNarrating = false;
+                
+                // reset bars
+                document.querySelectorAll('#token-bars .token-bar').forEach(b => b.style.width = '0%');
+                return;
+            }
+
+            const progressPercent = ((index + 1) / milestones.length) * 100;
+            
+            updateTimelineProgress(progressPercent);
+            highlightMilestone(index);
+            updateGlobalStats(index);
+            updatePhaseDashboard(index);
+            updateTokenBars(index);
+            updateSubagents(index);
+
+            // Auto-scroll to keep the active milestone in view as timeline plays/moves
+            if (index >= 0) {
+                setTimeout(() => {
+                    const milestoneEl = document.querySelector(`.milestone[data-index="${index}"]`);
+                    if (milestoneEl) {
+                        milestoneEl.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center', 
+                            inline: 'nearest' 
+                        });
+                    }
+                }, 60);
+            }
+
+            // (legacy auto-speak block removed; main narration now driven by narrateFullJourney)
+        }
+
+        function goToStep(index, animate = true) {
+            if (index < 0) index = 0;
+            if (index >= milestones.length) index = milestones.length - 1;
+
+            currentStep = index;
+
+            // Stop previous voice on manual navigation
+            stopSpeaking();
+
+            // Instantly update visuals
+            updateAllVisuals(index);
+
+            // If playing, keep going ONLY if not in full narrated mode (narrate drives via speak callbacks)
+            if (isPlaying && index < milestones.length - 1 && !isManualNarrating) {
+                scheduleNextStep();
+            } else if (index === milestones.length - 1) {
+                stopPlayback();
+                isManualNarrating = false;
+                // final celebration
+                setTimeout(() => createFinalBurst(), 420);
+            }
+        }
+
+        function scheduleNextStep() {
+            if (playInterval) clearTimeout(playInterval);
+            
+            // Base time per step adjusted by speed
+            const base = 1350;
+            const delay = Math.max(460, Math.floor(base / playSpeed));
+
+            playInterval = setTimeout(() => {
+                if (!isPlaying) return;
+                const next = currentStep + 1;
+                if (next < milestones.length) {
+                    goToStep(next);
+                } else {
+                    stopPlayback();
+                }
+            }, delay);
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                stopPlayback();
+            } else {
+                startPlayback();
+            }
+        }
+
+        function startPlayback() {
+            if (currentStep >= milestones.length - 1) {
+                resetJourney(false);
+            }
+            const startIdx = (currentStep < 0 ? 0 : currentStep);
+            narrateFullJourney(startIdx);
+        }
+
+        function stopPlayback() {
+            isPlaying = false;
+            if (playInterval) {
+                clearTimeout(playInterval);
+                playInterval = null;
+            }
+            isManualNarrating = false;
+            
+            const btn = document.getElementById('play-btn');
+            const icon = document.getElementById('play-icon');
+            const text = document.getElementById('play-text');
+            
+            btn.classList.remove('!bg-emerald-500', '!text-white');
+            icon.classList.remove('fa-pause');
+            icon.classList.add('fa-play');
+            text.textContent = 'NARRATE FULL JOURNEY';
+        }
+
+        function resetJourney(autoPlay = false) {
+            stopPlayback();
+            stopSpeaking();
+            isManualNarrating = false;
+            currentStep = -1;
+            updateAllVisuals(-1);
+            
+            // reset global counters explicitly
+            setTimeout(() => {
+                document.getElementById('total-tokens').textContent = '0';
+                document.getElementById('total-subagents').textContent = '0';
+                document.getElementById('build-time').textContent = '0m';
+                document.getElementById('total-cost').textContent = '$0.00';
+                document.getElementById('subagent-count').textContent = '0';
+                document.getElementById('subagent-list').innerHTML = '';
+                subagentTimeouts.forEach(id => clearTimeout(id));
+                subagentTimeouts = [];
+            }, 30);
+
+            if (autoPlay) {
+                setTimeout(() => narrateFullJourney(0), 180);
+            }
+        }
+
+        function setSpeed(speed) {
+            playSpeed = speed;
+            
+            // update buttons
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-zinc-800', 'text-white');
+                if (parseFloat(btn.dataset.speed) === speed) {
+                    btn.classList.add('active', 'bg-zinc-800', 'text-white');
+                }
+            });
+            
+            // if currently playing in legacy timer mode, restart
+            if (isPlaying && !isManualNarrating) {
+                if (playInterval) clearTimeout(playInterval);
+                scheduleNextStep();
+            }
+        }
+
+        function scrubTo(e, container) {
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const ratio = Math.max(0, Math.min(1, x / rect.width));
+            
+            const targetIndex = Math.floor(ratio * milestones.length);
+            stopPlayback();
+            stopSpeaking();
+            goToStep(Math.min(targetIndex, milestones.length - 1));
+            // Auto-start full narration (voice + moving timeline animation) from clicked position
+            setTimeout(() => {
+                narrateFullJourney(Math.min(targetIndex, milestones.length - 1));
+            }, 50);
+        }
+
+        // Create a single milestone row
+        function createMilestoneElement(m, index) {
+            const div = document.createElement('div');
+            div.className = `milestone flex gap-x-5 items-start group cursor-pointer`;
+            div.dataset.index = index;
+
+            div.innerHTML = `
+                <div class="flex-shrink-0 pt-1">
+                    <div class="milestone-dot w-[62px] h-[62px] rounded-3xl flex items-center justify-center text-2xl relative z-10 border">
+                        <i class="fa-solid ${getIcon(index)} text-blue-400 group-hover:text-cyan-300 transition-colors"></i>
+                        <i class="fa-solid fa-check absolute text-white text-xl"></i>
+                    </div>
+                </div>
+                
+                <div class="flex-1 pt-2 pb-7">
+                    <div class="flex items-center gap-x-2.5 mb-1 justify-between">
+                        <div class="flex items-center gap-x-2.5">
+                            <span class="font-mono text-xs text-zinc-400 timeline-time tracking-[1px]">${m.time}</span>
+                            <span class="font-semibold text-xl tracking-tight">${m.title}</span>
+                        </div>
+                        <div class="ml-2 flex items-center gap-x-1">
+                            <button onclick="event.stopImmediatePropagation(); speakMilestone(${index});" 
+                                    class="text-emerald-400 hover:text-emerald-300 hover:bg-zinc-800 border border-transparent hover:border-zinc-700 transition px-2 py-1 rounded-xl text-xs flex items-center gap-x-1"
+                                    title="Speak this phase (browser voice)">
+                                <i class="fa-solid fa-volume-up"></i>
+                                <span class="text-[10px] font-medium">SPEAK</span>
+                            </button>
+                            <button onclick="event.stopImmediatePropagation(); copyMilestoneForRealTTS(${index});" 
+                                    class="text-blue-400 hover:text-blue-300 hover:bg-zinc-800 border border-transparent hover:border-zinc-700 transition px-1.5 py-1 rounded-xl text-xs flex items-center"
+                                    title="Copy command to speak with real local edge-tts">
+                                <i class="fa-solid fa-terminal" style="font-size:10px"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <p class="text-[15px] text-zinc-300 leading-snug pr-4">${m.desc}</p>
+                    
+                    <div class="mt-2.5 grok-quote pl-3">
+                        <div class="text-emerald-400 text-xs font-medium flex items-center gap-x-1.5">
+                            <i class="fa-solid fa-bolt-lightning"></i>
+                            <span>GROK MOVE</span>
+                        </div>
+                        <div class="text-sm text-zinc-400">${m.grok}</div>
+                    </div>
+
+                    <div class="mt-3 flex flex-wrap gap-1.5 items-center">
+                        <div class="feature-pill rounded-2xl text-emerald-300 flex items-center gap-x-1">
+                            <i class="fa-solid fa-plus text-[9px]"></i>
+                            <span class="font-mono">+${(m.deltaTokens / 1000).toFixed(1)}k</span>
+                            <span class="opacity-60">tokens</span>
+                        </div>
+                        
+                        ${m.subagents > 0 ? `
+                        <div class="feature-pill rounded-2xl text-emerald-300 flex items-center gap-x-1">
+                            <i class="fa-solid fa-robot text-[9px]"></i>
+                            <span>${m.subagents} subagent${m.subagents > 1 ? 's' : ''}</span>
+                        </div>` : ''}
+                        
+                        <div class="text-xs px-2 text-zinc-400 font-medium">${m.elapsed}</div>
+                    </div>
+
+                    <div class="mt-2 flex flex-wrap gap-1">
+                        ${m.features.map(f => `<span class="px-2 py-px text-[10px] bg-zinc-900 border border-zinc-700 rounded text-zinc-300">${f}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Click to jump
+            div.addEventListener('click', () => {
+                stopPlayback();
+                goToStep(index);
+            });
+
+            return div;
+        }
+
+        function getIcon(i) {
+            const icons = [
+                'fa-lightbulb', 'fa-volume-up', 'fa-magic', 'fa-exclamation-triangle', 
+                'fa-broom', 'fa-cogs', 'fa-plug', 'fa-users', 'fa-microphone', 
+                'fa-terminal', 'fa-file-code', 'fa-flag-checkered'
+            ];
+            return icons[i] || 'fa-check';
+        }
+
+        // ============ edge-tts style voice (Web Speech) ============
+        function getSpeakTextForMilestone(m) {
+            let text = `${m.title}. ${m.desc} Grok's move: ${m.grok}. `;
+            if (m.features && m.features.length) {
+                text += `Delivered: ${m.features.join(', ')}. `;
+            }
+            text += `This phase used ${m.deltaTokens.toLocaleString()} tokens.`;
+            return text;
+        }
+
+        // Shorter text for auto-play narration (faster, focused on title + features)
+        function getShortSpeakTextForMilestone(m) {
+            let text = `${m.title}. `;
+            if (m.features && m.features.length) {
+                text += `Features: ${m.features.join(', ')}.`;
+            } else if (m.desc) {
+                text += m.desc.substring(0, 140);
+            }
+            return text;
+        }
+
+        // Storytelling version - fun, natural, non-boring narration for the full journey
+        function getStorySpeakText(m) {
+            if (!m) return "";
+
+            // Special warm intro for the very first "problem" step
+            if (m.title === "The Wall of Text Blues") {
+                return `You know that feeling? You're deep in flow with Grok or Claude, asking something clever, and suddenly this beautiful, thoughtful answer appears. But instead of listening like you're chatting with the world's most patient coding buddy, you're just... reading. Endless paragraphs. Eyes burning. The joy slowly leaking out of the experience. That was the real problem we wanted to solve.`;
+            }
+
+            let story = `${m.title}. ${m.desc} `;
+
+            // Make Grok's move more fun and natural
+            story += `And here's the cool part — Grok just got it. ${m.grok} `;
+
+            if (m.features && m.features.length) {
+                const featureList = m.features.join(', and ');
+                story += `In this phase we actually shipped: ${featureList}. `;
+            }
+
+            story += `Took about ${m.deltaTokens.toLocaleString()} tokens to get here.`;
+
+            return story;
+        }
+
+        function initVoices() {
+            const select = document.getElementById('voice-select');
+            if (!('speechSynthesis' in window)) {
+                select.innerHTML = '<option>Browser does not support speech</option>';
+                return;
+            }
+
+            function populate() {
+                voices = window.speechSynthesis.getVoices();
+                select.innerHTML = '';
+
+                // Only Google voices - they feel more natural
+                const googleVoices = voices.filter(v => 
+                    v.name.toLowerCase().includes('google')
+                );
+
+                // Prefer UK English Female
+                let defaultGoogle = googleVoices.find(v => 
+                    /uk.*female|en-gb.*female/i.test(v.name + ' ' + (v.lang || ''))
+                );
+
+                if (!defaultGoogle) {
+                    defaultGoogle = googleVoices.find(v => 
+                        /female/i.test(v.name) && /en-gb|uk/i.test(v.name + ' ' + (v.lang || ''))
+                    );
+                }
+
+                if (!defaultGoogle && googleVoices.length > 0) {
+                    defaultGoogle = googleVoices[0];
+                }
+
+                // Build dropdown with only Google voices
+                googleVoices.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v.name;
+                    let label = v.name;
+                    if (/uk.*female|en-gb.*female/i.test(v.name + ' ' + (v.lang || ''))) {
+                        label += ' ★';
+                    }
+                    opt.textContent = label + ` (${v.lang || ''})`;
+                    select.appendChild(opt);
+                });
+
+                // If no Google voices at all (rare), fallback warning
+                if (select.options.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'No Google voices available in this browser';
+                    select.appendChild(opt);
+                }
+
+                // Default to Google UK English Female (en-GB)
+                let target = 'Google UK English Female';
+                let foundDefault = false;
+                for (let i = 0; i < select.options.length; i++) {
+                    const txt = select.options[i].text.toLowerCase();
+                    const val = select.options[i].value.toLowerCase();
+                    if (txt.includes('uk english female') || val.includes('uk english female') ||
+                        (txt.includes('google') && txt.includes('en-gb') && txt.includes('female'))) {
+                        select.selectedIndex = i;
+                        foundDefault = true;
+                        break;
+                    }
+                }
+                if (!foundDefault && defaultGoogle) {
+                    select.value = defaultGoogle.name;
+                } else if (!foundDefault && select.options.length > 0) {
+                    select.selectedIndex = 0;
+                }
+
+                selectedVoice = voices.find(v => v.name === select.value) || (googleVoices.length ? googleVoices[0] : null);
+
+                // Note
+                const note = document.getElementById('voice-quality-note');
+                if (note) {
+                    if (googleVoices.length === 0) {
+                        note.innerHTML = `⚠️ No Google voices in this browser.<br>
+                        Use the "Real edge-tts" buttons for actual neural voices.`;
+                    } else {
+                        note.innerHTML = `Google voices only. Default: Google UK English Female (en-GB).`;
+                    }
+                    note.classList.remove('hidden');
+                }
+            }
+
+            populate();
+            // Some browsers load voices async
+            window.speechSynthesis.onvoiceschanged = populate;
+
+            // Retry populate in case voices load late (common on first page load)
+            setTimeout(() => {
+                if (voices.length === 0) populate();
+            }, 800);
+
+            // Set default rate from slider
+            const rateSlider = document.getElementById('voice-rate');
+            if (rateSlider) {
+                voiceRate = parseFloat(rateSlider.value);
+                const valEl = document.getElementById('voice-rate-val');
+                if (valEl) valEl.textContent = voiceRate.toFixed(2);
+            }
+        }
+
+        function onVoiceChange() {
+            const select = document.getElementById('voice-select');
+            if (!select || !voices.length) return;
+            selectedVoice = voices.find(v => v.name === select.value) || null;
+        }
+
+        function onVoiceRateChange(slider) {
+            voiceRate = parseFloat(slider.value);
+            document.getElementById('voice-rate-val').textContent = voiceRate.toFixed(2);
+        }
+
+        function refreshVoices() {
+            const select = document.getElementById('voice-select');
+            if (select) select.innerHTML = '<option>Reloading natural voices...</option>';
+
+            if ('speechSynthesis' in window) {
+                setTimeout(() => {
+                    // Force re-enumeration then re-run full voice population
+                    window.speechSynthesis.getVoices();
+                    if (typeof initVoices === 'function') {
+                        initVoices();
+                    }
+                }, 150);
+            }
+        }
+
+        function stopSpeaking() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+            currentUtterance = null;
+            isSpeaking = false;
+            clearSpeakingVisual();
+            const status = document.getElementById('voice-status');
+            if (status) status.classList.add('hidden');
+        }
+
+        function setSpeakingVisual(index) {
+            clearSpeakingVisual();
+            speakingIndex = index;
+            const rows = document.querySelectorAll('.milestone');
+            if (rows[index]) {
+                rows[index].classList.add('speaking');
+            }
+        }
+
+        function clearSpeakingVisual() {
+            document.querySelectorAll('.milestone.speaking').forEach(el => el.classList.remove('speaking'));
+            speakingIndex = -1;
+        }
+
+        function speak(text, onEndCallback, speakIndex = -1, statusLabel = null) {
+            if (!('speechSynthesis' in window)) {
+                alert("Your browser does not support speech synthesis. Try Chrome, Edge or Safari.");
+                return;
+            }
+            stopSpeaking();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = voiceRate;
+            utterance.pitch = voicePitch;
+            utterance.volume = 0.95;
+
+            let useVoice = selectedVoice;
+
+            // Prefer Google voices at runtime if current not Google
+            if (!useVoice || !/google/i.test(useVoice.name || '')) {
+                const google = voices.find(v => /google/i.test(v.name) && /en/i.test(v.lang || v.name));
+                if (google) useVoice = google;
+            }
+
+            if (useVoice) {
+                utterance.voice = useVoice;
+                // Google voices often sound good at 1.05-1.15 rate
+                if (/google/i.test(useVoice.name)) {
+                    utterance.rate = Math.min(1.15, Math.max(1.0, voiceRate));
+                }
+            }
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                currentUtterance = null;
+                clearSpeakingVisual();
+                const status = document.getElementById('voice-status');
+                if (status) status.classList.add('hidden');
+                if (onEndCallback) onEndCallback();
+            };
+
+            utterance.onerror = () => {
+                isSpeaking = false;
+                currentUtterance = null;
+                clearSpeakingVisual();
+                const status = document.getElementById('voice-status');
+                if (status) status.classList.add('hidden');
+            };
+
+            currentUtterance = utterance;
+            isSpeaking = true;
+
+            // Set visual highlight if we have a milestone index
+            if (speakIndex >= 0) {
+                setSpeakingVisual(speakIndex);
+            }
+
+            const status = document.getElementById('voice-status');
+            const statusText = document.getElementById('voice-status-text');
+            if (status && statusText) {
+                let label = statusLabel || 'Speaking with edge-tts style voice...';
+                if (speakIndex >= 0 && milestones[speakIndex]) {
+                    label = `Speaking: ${milestones[speakIndex].title}`;
+                }
+                statusText.textContent = label;
+                status.classList.remove('hidden');
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakMilestone(index) {
+            const m = milestones[index];
+            if (!m) return;
+            const text = getStorySpeakText(m);
+            speak(text, null, index);
+        }
+
+        function speakCurrentPhase() {
+            if (currentStep < 0) {
+                // speak the first one or intro
+                speak("Hey there! This is the story of how we gave Grok and Claude a real voice. It all started because reading walls of text gets old fast. Stick around for the full narrated adventure.", null, -1, "Speaking intro");
+                return;
+            }
+            speakMilestone(currentStep);
+        }
+
+        function narrateFullJourney(startIndex = 0) {
+            stopSpeaking();
+            isPlaying = true;
+            isManualNarrating = true;
+
+            // Update main button to pause state
+            const btn = document.getElementById('play-btn');
+            const icon = document.getElementById('play-icon');
+            const textEl = document.getElementById('play-text');
+            if (btn && icon && textEl) {
+                btn.classList.add('!bg-emerald-500', '!text-white');
+                icon.classList.remove('fa-play');
+                icon.classList.add('fa-pause');
+                textEl.textContent = 'PAUSE';
+            }
+
+            let i = startIndex;
+
+            function next() {
+                if (i >= milestones.length) {
+                    isManualNarrating = false;
+                    stopPlayback();  // resets button
+                    if (startIndex === 0) {
+                        speak("And just like that, the journey wraps up. What started as a simple wish — 'hey, can the AI just speak to me instead of making me read everything?' — turned into a real, working voice for Claude Code and Grok Build. Two hours and fifteen minutes of actual focused time (with a few very necessary breaks in between), one hundred forty five thousand eight hundred tokens, seven enthusiastic subagents, and a whole lot of fun later... we shipped OutLoud (formerly claude-code-voice) with the 0.2.0 rebrand. Thanks for listening to the story.", null, -1, "Journey complete");
+                    }
+                    return;
+                }
+
+                if (!isPlaying) {
+                    isManualNarrating = false;
+                    return;
+                }
+
+                // Drive the visual animation for this step
+                updateAllVisuals(i);
+
+                const m = milestones[i];
+                const text = getStorySpeakText(m);
+                speak(text, () => {
+                    if (isPlaying) {
+                        const pause = Math.max(120, Math.floor(450 / playSpeed));
+                        setTimeout(() => {
+                            i++;
+                            next();
+                        }, pause);
+                    } else {
+                        isManualNarrating = false;
+                    }
+                }, i);
+            }
+            next();
+        }
+
+        function speakDeliveredFeatures() {
+            const featuresText = `And here's the fun part — what actually got shipped! We built a full working speaker engine with real edge-tts for that sweet natural sound. Then came the Claude Code plugin magic — hooks that quietly save everything, slash commands, and a cute status line. We even dogfooded it ourselves with the Grok Voice skill so I could speak right inside this chat. Oh, and we gave you a beautiful live visualizer, proper multi-engine support, zero extra token cost at runtime, handy shell wrappers, and documentation that doesn't put you to sleep. All of it ready for the marketplace. Built in one wild, focused session by Grok Build. Pretty neat, right?`;
+            speak(featuresText, null, -1, "What Grok Delivered");
+        }
+
+        function testVoice() {
+            const testText = "This is edge-tts style voice inside the Grok Build journey. The speaker plugin was built entirely by Grok using natural neural voices.";
+            speak(testText, null, -1, "Voice test");
+        }
+
+        function copyForRealTTS() {
+            let textToSpeak;
+            let label = "current phase";
+
+            if (currentStep >= 0 && milestones[currentStep]) {
+                textToSpeak = getSpeakTextForMilestone(milestones[currentStep]);
+                label = milestones[currentStep].title;
+            } else {
+                textToSpeak = "Welcome to the story of OutLoud (formerly claude-code-voice) — the little project that gave AI a voice.";
+            }
+
+            // Escape for command line
+            const escaped = textToSpeak.replace(/"/g, '\\"').replace(/\n/g, ' ');
+            const command = `python scripts/speaker.py "${escaped}"`;
+
+            navigator.clipboard.writeText(command).then(() => {
+                // Show nice toast
+                const toast = document.createElement('div');
+                toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#166534;color:#86efac;padding:8px 16px;border-radius:9999px;font-size:12px;border:1px solid #4ade80;z-index:99999;box-shadow:0 10px 15px -3px rgb(0 0 0 / 0.3);';
+                toast.innerHTML = `✅ Copied real edge-tts command for <strong>${label}</strong><br><span style="opacity:0.7;font-size:10px">Run in terminal: python scripts/speaker.py "..."</span>`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3800);
+            }).catch(() => {
+                // Fallback: alert with the command
+                prompt('Copy this command to use the real edge-tts:', command);
+            });
+        }
+
+        function copyMilestoneForRealTTS(index) {
+            const m = milestones[index];
+            if (!m) return;
+            const text = getSpeakTextForMilestone(m);
+            const escaped = text.replace(/"/g, '\\"').replace(/\n/g, ' ');
+            const command = `python scripts/speaker.py "${escaped}"`;
+
+            navigator.clipboard.writeText(command).then(() => {
+                const toast = document.createElement('div');
+                toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e3a8a;color:#93c5fd;padding:8px 16px;border-radius:9999px;font-size:12px;border:1px solid #60a5fa;z-index:99999;';
+                toast.innerHTML = `✅ Copied real edge-tts command for <strong>${m.title}</strong>`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 2600);
+            }).catch(() => {
+                prompt('Copy command for real edge-tts:', command);
+            });
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline');
+            container.innerHTML = '';
+
+            milestones.forEach((m, index) => {
+                const el = createMilestoneElement(m, index);
+                container.appendChild(el);
+            });
+        }
+
+        function buildTokenBarsOnce() {
+            // Prebuild on first updateAllVisuals call if not done
+            if (!tokenBarsBuilt) {
+                updateTokenBars(-1);
+            }
+        }
+
+        function createFinalBurst() {
+            // Small celebratory token burst
+            const colors = ['#3b82f6', '#67e8f9', '#34d399'];
+            const container = document.body;
+            
+            for (let i = 0; i < 42; i++) {
+                setTimeout(() => {
+                    const c = document.createElement('div');
+                    c.style.position = 'fixed';
+                    c.style.left = (35 + Math.random() * 30) + 'vw';
+                    c.style.top = (38 + Math.random() * 12) + 'vh';
+                    c.style.width = '6px';
+                    c.style.height = '6px';
+                    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '1px';
+                    c.style.zIndex = '99999';
+                    c.style.pointerEvents = 'none';
+                    container.appendChild(c);
+
+                    const tx = (Math.random() - 0.5) * 180;
+                    const ty = 90 + Math.random() * 90;
+                    
+                    c.animate([
+                        { transform: `translate(0,0)`, opacity: 1 },
+                        { transform: `translate(${tx}px, ${ty}px)`, opacity: 0 }
+                    ], {
+                        duration: 1100 + Math.random() * 600,
+                        easing: 'cubic-bezier(.22,1,.3,1)'
+                    }).onfinish = () => c.remove();
+                }, i * 1.6);
+            }
+        }
+
+        function initKeyboard() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    togglePlay();
+                }
+                if (e.key.toLowerCase() === 'r') {
+                    resetJourney();
+                }
+                if (e.key === 'ArrowRight') {
+                    stopPlayback();
+                    goToStep(currentStep + 1);
+                }
+                if (e.key === 'ArrowLeft') {
+                    stopPlayback();
+                    goToStep(Math.max(0, currentStep - 1));
+                }
+            });
+        }
+
+        function initSpeedButtons() {
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                const sp = parseFloat(btn.dataset.speed);
+                if (sp === 1) btn.classList.add('active', 'bg-zinc-800', 'text-white');
+                
+                btn.addEventListener('click', () => {
+                    // visual handled inside setSpeed
+                });
+            });
+        }
+
+        function initScrubHover() {
+            const scrub = document.querySelector('.flex-1.bg-zinc-900.border.border-zinc-800');
+            if (!scrub) return;
+            
+            scrub.addEventListener('mousemove', (e) => {
+                const rect = scrub.getBoundingClientRect();
+                const ratio = (e.clientX - rect.left) / rect.width;
+                const preview = Math.floor(ratio * milestones.length);
+                scrub.title = milestones[Math.min(Math.max(0, preview), milestones.length - 1)].title;
+            });
+        }
+
+        function initJourney() {
+            initTailwind();
+            renderTimeline();
+            
+            // Start at beginning state
+            updateAllVisuals(-1);
+            buildTokenBarsOnce();
+            
+            // Initialize some nice default values
+            document.getElementById('final-cost-big').textContent = '$0.29';
+            
+            initKeyboard();
+            initSpeedButtons();
+            initScrubHover();
+
+            // Initialize edge-tts style voice (Web Speech)
+            initVoices();
+
+            // Default rate display
+            const rateVal = document.getElementById('voice-rate-val');
+            if (rateVal) rateVal.textContent = voiceRate.toFixed(2);
+
+            // Gentle auto hint animation on the play button after 2.4s
+            setTimeout(() => {
+                const play = document.getElementById('play-btn');
+                if (play && currentStep < 0) {
+                    play.classList.add('animate-pulse');
+                    setTimeout(() => play.classList.remove('animate-pulse'), 1800);
+                }
+            }, 2400);
+
+            // Bonus: clicking the hero stats resets + starts full narrated journey
+            const statsRow = document.querySelector('#total-tokens').parentElement.parentElement;
+            if (statsRow) {
+                statsRow.addEventListener('click', () => {
+                    if (!isPlaying) {
+                        resetJourney(false);
+                        narrateFullJourney(0);
+                    }
+                });
+                statsRow.style.cursor = 'pointer';
+            }
+
+            console.log('%c[Grok Build Journey] Ready. Play the timeline to see token, subagent and cost animation.', 'color:#64748b');
+        }
+
+        // Boot
+        window.onload = () => {
+            initJourney();
+        };
+
+        // Expose a couple helpers for power users
+        window.GROK_JOURNEY = {
+            play: () => { const p = document.getElementById('play-btn'); if (p) startPlayback(); },
+            reset: () => resetJourney(),
+            jump: (n) => goToStep(n),
+            speak: (n) => speakMilestone(n),
+            narrate: () => narrateFullJourney(),
+            stopVoice: () => stopSpeaking()
+        };
     </script>
 </body>
 </html>

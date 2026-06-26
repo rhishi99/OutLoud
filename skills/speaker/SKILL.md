@@ -1,15 +1,15 @@
 ﻿---
 name: speaker
 description: >
-  Adds voice output capability to Claude Code. After you give a response,
+  Adds voice output capability (OutLoud) to Claude Code. After you give a response,
   the user can press a speaker hotkey or type /speak (or use a terminal button binding)
   to hear the output spoken aloud using the local speaker plugin.
-  The plugin uses a Stop hook to remember your last answer.
-  Use this whenever the user mentions speaker, voice, read it, speak, hear output, TTS, or wants to listen while working.
+  The plugin uses a Stop hook to remember your last answer (and optional autoSpeak).
+  Use this whenever the user mentions speaker, voice, read it, speak, hear output, TTS, OutLoud, or wants to listen while working.
 license: MIT
 ---
 
-# Speaker (claude-code-voice)
+# Speaker (OutLoud)
 
 You have a voice now.
 

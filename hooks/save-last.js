@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 /**
- * Stop hook for claude-code-voice speaker plugin.
+ * Stop hook for OutLoud (claude-code-voice) speaker plugin.
  * Captures the last assistant response text and writes it to a well-known location
  * so that the speaker CLI / hotkey / /speak can play it on demand.
+ *
+ * Supports autoSpeak (opt-in auto-narration) AFTER save:
+ * - NON-BLOCKING: spawns detached speaker process (playback never holds hook)
+ * - Respects OUTLOUD_MUTE=1 (CI/pair safety)
+ * - Applies autoSpeak* config: skip code, max chars, mode (full/summary/first-paragraph)
+ * - Reuses exact same speaker backend (speaker.py or speak.ps1)
  *
  * Supports both:
  * - Direct "last_assistant_message" style (some versions)
@@ -12,6 +18,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { spawn } = require('child_process');
 
 function getVoiceDir() {
   const home = os.homedir();
@@ -24,6 +31,129 @@ function getVoiceDir() {
 
 function getLastFile() {
   return path.join(getVoiceDir(), 'last-response.txt');
+}
+
+function getConfigPath() {
+  return path.join(getVoiceDir(), 'config.json');
+}
+
+function loadConfig() {
+  const defaults = {
+    engine: "edge-tts",
+    voice: "en-US-AriaNeural",
+    rate: 1.0,
+    volume: 1.0,
+    strip_code: true,
+    max_chars: 6500,
+    autoSpeak: false,
+    autoSpeakMaxChars: 1200,
+    autoSpeakSkipCodeBlocks: true,
+    autoSpeakMode: "full"
+  };
+  try {
+    const p = getConfigPath();
+    if (fs.existsSync(p)) {
+      const user = JSON.parse(fs.readFileSync(p, 'utf8'));
+      return { ...defaults, ...user };
+    }
+  } catch {}
+  return defaults;
+}
+
+function processForAutoSpeak(text, cfg) {
+  if (!text) return '';
+  let t = text;
+
+  const skip = !!cfg.autoSpeakSkipCodeBlocks;
+  if (skip) {
+    t = t.replace(/```[\s\S]*?```/g, '');
+    t = t.replace(/`([^`]+)`/g, '$1');
+  } else {
+    t = t.replace(/```[\s\S]*?```/g, '[code block]');
+    t = t.replace(/`([^`]+)`/g, '$1');
+  }
+
+  // strip images/links
+  t = t.replace(/!\[[^\]]*\]\([^)]*\)/g, '');
+  t = t.replace(/\[[^\]]*\]\([^)]*\)/g, '$1');
+
+  // normalize ws
+  t = t.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+
+  const maxC = Number(cfg.autoSpeakMaxChars || 1200);
+  const mode = cfg.autoSpeakMode || 'full';
+
+  if (t.length <= maxC) return t;
+
+  if (mode === 'first-paragraph') {
+    const parts = t.split(/\n\s*\n/);
+    let cand = parts[0] || t;
+    if (cand.length > maxC) cand = cand.slice(0, maxC).split(' ').slice(0, -1).join(' ') + '...';
+    return cand.trim();
+  } else if (mode === 'summary') {
+    // naive sentences
+    const sentences = t.split(/(?<=[.!?])\s+/);
+    if (sentences.length <= 2) {
+      return t.slice(0, maxC).trim();
+    }
+    const first = sentences[0];
+    const last = sentences[sentences.length - 1];
+    let s = (first + ' ... ' + last).trim();
+    if (s.length > maxC) s = s.slice(0, maxC).split(' ').slice(0, -1).join(' ') + '...';
+    return s;
+  } else {
+    // full capped
+    return t.slice(0, maxC).split(' ').slice(0, -1).join(' ') + '...';
+  }
+}
+
+function isMuted() {
+  const v = (process.env.OUTLOUD_MUTE || '').toString().trim();
+  return v === '1' || v.toLowerCase() === 'true';
+}
+
+function spawnDetachedSpeak(text) {
+  // Reuse the SAME backend path used by /speak and hotkeys.
+  // Prefer python speaker.py "text" (handles all engines + config).
+  // Detached + unref so hook returns instantly (<1s).
+  const dir = getVoiceDir();
+  const pythonSpeaker = path.join(dir, '..', '..'); // not reliable; use repo relative via env or absolute from known
+  // Simpler robust: use 'python' + scripts/speaker.py relative to plugin root if available, fallback to system python + speaker.py
+  // But plugin root not passed; we use the installed-in-path convention + direct python call with full path guess.
+  // Most reliable cross: shell out python -m with full path to speaker.py from known locations.
+
+  // Strategy: try several locations for speaker.py, then spawn detached.
+  const candidates = [
+    // when running from repo root context
+    path.join(__dirname, '..', 'scripts', 'speaker.py'),
+    // common
+    path.join(process.cwd(), 'scripts', 'speaker.py'),
+  ];
+
+  let speakerPy = null;
+  for (const c of candidates) {
+    try { if (fs.existsSync(c)) { speakerPy = c; break; } } catch {}
+  }
+  if (!speakerPy) {
+    // last resort: rely on PATH python having it in cwd or user will have it working for manual too
+    speakerPy = path.join(getVoiceDir(), '..', 'speaker.py'); // unlikely
+  }
+
+  // Build command: python "<speakerPy>" "<text>"
+  const cmd = process.platform === 'win32' ? 'python' : 'python3';
+  const args = speakerPy && fs.existsSync(speakerPy) ? [speakerPy, text] : ['-c', `import subprocess,sys;print("speaker backend not locatable")`];
+
+  try {
+    const child = spawn(cmd, args, {
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: true,
+      shell: false,
+    });
+    child.unref();
+  } catch (e) {
+    // never throw from hook
+  }
 }
 
 function cleanForSpeech(text) {
@@ -109,8 +239,20 @@ function main() {
     const cleaned = cleanForSpeech(text);
     const target = getLastFile();
     fs.writeFileSync(target, cleaned, 'utf8');
-    // Optional debug marker
-    // console.error(`[speaker] saved ${cleaned.length} chars`);
+
+    // === autoSpeak: NON-BLOCKING fire-and-forget ===
+    // After save (so /speak last always has full), optionally speak a processed slice.
+    // Hook must return <10s always. Playback is detached.
+    if (!isMuted()) {
+      const cfg = loadConfig();
+      if (cfg.autoSpeak) {
+        const toSpeak = processForAutoSpeak(cleaned, cfg);
+        if (toSpeak && toSpeak.trim().length > 3) {
+          // Spawn detached using exact same speaker backend as /speak + hotkey
+          spawnDetachedSpeak(toSpeak);
+        }
+      }
+    }
   }
 
   // Always exit 0 so we never block Claude Code

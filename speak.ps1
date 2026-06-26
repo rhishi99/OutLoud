@@ -1,5 +1,5 @@
 <#
-Root convenience wrapper (smart engine dispatcher)
+OutLoud root convenience wrapper (smart engine dispatcher) [formerly claude-code-voice]
 
 It checks your config.json and routes to the right backend:
 - native → fast built-in (scripts/speak.ps1)  [lightweight fallback]

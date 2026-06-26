@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔊 Claude-Code-Voice — Live Visualizer &amp; Config Console</title>
+    <title>🔊 OutLoud — Live Visualizer &amp; Config Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
@@ -90,7 +90,7 @@
                     <i class="fa-solid fa-volume-high text-3xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-display text-3xl font-semibold tracking-tighter">claude-code-voice</h1>
+                    <h1 class="font-display text-3xl font-semibold tracking-tighter">OutLoud</h1>
                     <p class="text-xs text-slate-400 -mt-1">Speaker Plugin • Claude Code (Grok testing optional)</p>
                 </div>
             </div>
@@ -99,11 +99,11 @@
                 <!-- Status Badge -->
                 <div class="flex items-center gap-x-2 bg-emerald-900/30 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-3xl text-sm font-medium">
                     <div class="w-2 h-2 bg-emerald-400 rounded-full status-dot"></div>
-                    <span class="font-medium">READY: Local + Claude Code Plugin</span>
+                    <span class="font-medium">READY: OutLoud 0.2.0 • Local + Claude Code Plugin</span>
                 </div>
                 
                 <div class="bg-emerald-900/30 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-3xl text-sm flex items-center gap-x-2">
-                    <span class="font-medium">Claude Code testing (WSL focus)</span>
+                    <span class="font-medium">Claude Code testing (WSL focus) • autoSpeak + /speak controls</span>
                 </div>
             </div>
         </div>
@@ -120,8 +120,8 @@
                     <span class="text-slate-400">Visualized &amp; configurable.</span>
                 </h2>
                 <p class="mt-3 text-xl text-slate-400">
-                    Default: edge-tts (Aria) + playsound for clean playback. Configurable TTS, on-demand only, zero extra LLM tokens. 
-                    Speaker flows for Claude Code plugin. Live dev tool (Grok testing available).
+                    Default: edge-tts (Aria) + playsound for clean playback. Configurable TTS (incl. 4 autoSpeak keys), on-demand + opt-in auto, zero extra LLM tokens. 
+                    Speaker flows for Claude Code plugin. Live dev tool (Grok testing available). Formerly claude-code-voice.
                 </p>
             </div>
 
@@ -130,7 +130,7 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4">
                     <div class="text-xs uppercase tracking-widest text-slate-400">Current Mode</div>
                     <div class="text-2xl font-semibold mt-1 text-emerald-400">Claude Code Testing (WSL)</div>
-                    <div class="text-xs mt-1">edge-tts + playsound default • Direct calls + shared last-response</div>
+                    <div class="text-xs mt-1">edge-tts + playsound • autoSpeak + /speak on/off/stop (0.2.0) • Direct calls + shared last-response</div>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4">
                     <div class="text-xs uppercase tracking-widest text-slate-400">Primary Engine</div>
@@ -184,7 +184,7 @@
                             <div class="flex gap-3">
                                 <div class="font-mono bg-slate-800 px-2 py-0.5 rounded text-xs self-start mt-0.5">1</div>
                                 <div>
-                                    <code class="text-emerald-300">cd E:\vibe-code-projects\claude-code-voice</code>
+                                    <code class="text-emerald-300">cd E:\vibe-code-projects\claude-code-voice</code> <span class="text-[10px] text-slate-500">(folder on disk; project = OutLoud)</span>
                                 </div>
                             </div>
                             
@@ -203,12 +203,13 @@
                                     <div class="text-xs text-emerald-300 mb-0.5">Configure for Claude Code:</div>
                                     <div class="bg-slate-950 text-emerald-300 px-3 py-1 rounded text-xs font-mono border border-slate-800">"set engine to edge-tts with Aria voice"</div>
                                     <div class="text-[10px] mt-1 text-slate-500">Default now: edge-tts + en-US-AriaNeural + playsound playback</div>
+                                    <div class="text-[10px] mt-1 text-amber-300">New in 0.2.0: autoSpeak, autoSpeakMaxChars, autoSpeakSkipCodeBlocks, autoSpeakMode (see Live Config Console)</div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="mt-4 pt-4 border-t border-slate-700 text-xs text-slate-400">
-                            Use /speak or hotkey in Claude Code (or python scripts/speaker.py --last)
+                            Use /speak (on/off/stop) or hotkey in Claude Code (or python scripts/speaker.py --last). 0.2.0: autoSpeak support.
                         </div>
                     </div>
 
@@ -216,7 +217,7 @@
                     <div class="lg:col-span-7 bg-slate-900 border border-slate-700 rounded-3xl p-6">
                         <div class="font-semibold mb-3 flex items-center gap-x-2">
                             <i class="fa-solid fa-check-double"></i>
-                            <span>What has been built (all local)</span>
+                            <span>What has been built (all local • OutLoud 0.2.0)</span>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-3 text-sm">
@@ -225,9 +226,9 @@
                                 <ul class="mt-1 text-xs space-y-0.5 text-slate-400">
                                     <li>• .claude-plugin/marketplace.json</li>
                                     <li>• hooks/ (Stop hook saves text)</li>
-                                    <li>• commands/speak.md (/speak)</li>
+                                    <li>• commands/speak.md (/speak on/off/stop)</li>
                                     <li>• skills/speaker/SKILL.md</li>
-                                    <li>• Status line badge (🔊)</li>
+                                    <li>• Status line badge (🔊 hardened)</li>
                                 </ul>
                             </div>
                             <div>
@@ -235,7 +236,7 @@
                                 <ul class="mt-1 text-xs space-y-0.5 text-slate-400">
                                     <li>• speaker.py — default edge-tts + Aria</li>
                                     <li>• playsound for clean MP3 playback</li>
-                                    <li>• config.json driven (edge-tts focus)</li>
+                                    <li>• config.json driven (4 autospeak keys in 0.2.0)</li>
                                     <li>• Smart root speak.ps1 + .cmd</li>
                                     <li>• Grok direct + shared last-response</li>
                                 </ul>
@@ -257,7 +258,7 @@
                                 <li>• <strong>Claude Code:</strong> Stop hook (hooks/save-last.js) quietly writes cleaned text to last-response.txt on every final response.</li>
                                 <li>• In Claude Code: /speak command or hotkey runs the speaker on captured output.</li>
                             </ul>
-                            <div class="mt-3 text-xs">No auto-speak. The LLM output is just made "speakable".</div>
+                            <div class="mt-3 text-xs">Auto-speak is opt-in via <code>autoSpeak</code> config (0.2.0+). Default: off. The LLM output is captured and made speakable on demand (or auto if enabled).</div>
                         </div>
                         <div>
                             <div class="uppercase text-xs tracking-widest text-slate-400 mb-1">The "button"</div>
@@ -289,7 +290,7 @@
                         </div>
                         <div>
                             <div class="font-medium text-emerald-300 mb-1">2. Set default (current focus)</div>
-                            <code class="block bg-slate-950 p-2 rounded text-[10px]">python scripts/speaker.py --set engine edge-tts<br>python scripts/speaker.py --set voice en-US-AriaNeural</code>
+                            <code class="block bg-slate-950 p-2 rounded text-[10px]">python scripts/speaker.py --set engine edge-tts<br>python scripts/speaker.py --set voice en-US-AriaNeural<br>python scripts/speaker.py --set autoSpeak false<br>python scripts/speaker.py --set autoSpeakMode full</code>
                         </div>
                         <div>
                             <div class="font-medium text-emerald-300 mb-1">3. Direct speak test</div>
@@ -314,7 +315,7 @@
                 <div class="mt-6 text-xs px-1 text-slate-400">
                     <strong class="text-slate-200">Important:</strong> Nothing has been installed into any real Claude Code instance. 
                     All testing so far has been done by directly calling the speak scripts from this Grok chat using the terminal tool.
-                    Default engine is now <span class="font-medium text-emerald-300">edge-tts</span> (Aria) with playsound for clean playback.
+                    Default engine is now <span class="font-medium text-emerald-300">edge-tts</span> (Aria) with playsound for clean playback. OutLoud rebrand + autoSpeak landed in 0.2.0.
                 </div>
             </div>
 
@@ -324,7 +325,7 @@
                     <div class="flex justify-between items-center mb-4">
                         <div>
                             <span class="font-semibold text-lg">Live Config Console</span>
-                            <span class="ml-2 text-xs bg-emerald-600/20 text-emerald-400 px-2 py-0.5 rounded">edge-tts + Aria default • playsound</span>
+                            <span class="ml-2 text-xs bg-emerald-600/20 text-emerald-400 px-2 py-0.5 rounded">edge-tts + Aria default • playsound • autoSpeak 0.2.0</span>
                         </div>
                         <button onclick="resetConfigForm()" 
                                 class="text-xs px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded-2xl flex items-center gap-x-1">
@@ -373,6 +374,45 @@
                         </div>
                     </div>
 
+                    <!-- AutoSpeak (new in 0.2.0: 4 config keys for auto-narration) -->
+                    <div class="mt-5 pt-4 border-t border-slate-700">
+                        <div class="flex items-center gap-x-2 mb-2">
+                            <i class="fa-solid fa-robot text-amber-400"></i>
+                            <span class="font-semibold text-sm">AUTOSPEAK (auto-narration • 0.2.0)</span>
+                            <span class="text-[10px] px-1.5 py-px bg-amber-900/30 text-amber-400 rounded">opt-in</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div>
+                                <label class="flex items-center gap-x-2 cursor-pointer">
+                                    <input type="checkbox" id="autoSpeak" class="accent-amber-500">
+                                    <span class="font-medium text-slate-300">autoSpeak — enable auto narration</span>
+                                </label>
+                                <div class="text-[10px] text-slate-500 mt-0.5">Reads responses aloud automatically after Stop hook (when on).</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">autoSpeakMaxChars</label>
+                                <input type="number" id="autoSpeakMaxChars" value="1200" min="200" max="8000" step="100"
+                                       class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-3 py-1.5 text-sm font-mono focus:outline-none focus:border-blue-500">
+                                <div class="text-[10px] text-slate-500">Truncate long responses (chars).</div>
+                            </div>
+                            <div>
+                                <label class="flex items-center gap-x-2 cursor-pointer">
+                                    <input type="checkbox" id="autoSpeakSkipCodeBlocks" checked class="accent-amber-500">
+                                    <span class="font-medium text-slate-300">autoSpeakSkipCodeBlocks</span>
+                                </label>
+                                <div class="text-[10px] text-slate-500">Skip code blocks in auto narration (recommended).</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">autoSpeakMode</label>
+                                <select id="autoSpeakMode" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500">
+                                    <option value="full">full — entire cleaned response</option>
+                                    <option value="summary">summary — concise version</option>
+                                    <option value="first-paragraph">first-paragraph</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Test phrase -->
                     <div class="mt-5">
                         <label class="block text-xs font-medium text-slate-400 mb-1.5">TEST PHRASE (what to speak)</label>
@@ -405,7 +445,7 @@
                 </div>
                 
                 <div class="text-[10px] mt-2 px-1 text-slate-500">
-                    This console is interactive in your browser. Clicking "Ask Grok to Apply" will give me the exact text to execute right now using the terminal tool. Uses current project default (edge-tts + Aria).
+                    This console is interactive in your browser. Clicking "Ask Grok to Apply" will give me the exact text to execute right now using the terminal tool. Uses current project default (edge-tts + Aria + autospeak keys in 0.2.0).
                 </div>
             </div>
 
@@ -463,7 +503,7 @@
                     </div>
                     <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800">
                         <div class="font-semibold mb-2">On-Demand Only</div>
-                        <div class="text-slate-400">No auto-speaking ever. User/hotkey/<code>/speak</code> or direct ask in Grok triggers playback.</div>
+                        <div class="text-slate-400">autoSpeak opt-in (0.2.0). Default off. User/hotkey/<code>/speak on|off|stop</code> or direct ask triggers (or auto-narrates when enabled).</div>
                     </div>
                 </div>
 
@@ -476,7 +516,7 @@
             <div id="files" class="tab-content pt-6 hidden">
                 <div class="bg-slate-900 border border-slate-700 rounded-3xl p-5 text-sm">
                     <div class="font-semibold mb-3">Project Structure (what we created)</div>
-                    <pre class="text-xs bg-slate-950 p-4 rounded-2xl overflow-auto"><code>claude-code-voice/
+                    <pre class="text-xs bg-slate-950 p-4 rounded-2xl overflow-auto"><code>OutLoud/ (on-disk folder: claude-code-voice)
 ├── .claude-plugin/
 │   └── marketplace.json          # Plugin definition for Claude
 ├── hooks/
@@ -507,7 +547,7 @@
             <div>
                 All work is local to this folder. No changes made to any Claude Code installation.
                 <br>
-                Current focus: edge-tts (Aria) + playsound for clean playback. Hotkey + /speak + direct Grok speak.
+                Current focus: edge-tts (Aria) + playsound for clean playback. Hotkey + /speak on/off/stop + autoSpeak + direct Grok speak. OutLoud 0.2.0.
             </div>
             <button onclick="window.location.reload()" class="text-blue-400 hover:text-blue-300">Reload visualizer</button>
         </div>
@@ -592,6 +632,10 @@
                 voice: document.getElementById('voice').value,
                 rate: parseFloat(document.getElementById('rate').value),
                 volume: parseFloat(document.getElementById('volume').value),
+                autoSpeak: document.getElementById('autoSpeak').checked,
+                autoSpeakMaxChars: parseInt(document.getElementById('autoSpeakMaxChars').value, 10) || 1200,
+                autoSpeakSkipCodeBlocks: document.getElementById('autoSpeakSkipCodeBlocks').checked,
+                autoSpeakMode: document.getElementById('autoSpeakMode').value || 'full',
                 testPhrase: document.getElementById('test-phrase').value || 'This is a test of the configurable speaker plugin.'
             };
         }
@@ -602,7 +646,11 @@
                         `python scripts/speaker.py --set engine ${cfg.engine}\n` +
                         `python scripts/speaker.py --set voice "${cfg.voice}"\n` +
                         `python scripts/speaker.py --set rate ${cfg.rate}\n` +
-                        `python scripts/speaker.py --set volume ${cfg.volume}\n\n` +
+                        `python scripts/speaker.py --set volume ${cfg.volume}\n` +
+                        `python scripts/speaker.py --set autoSpeak ${cfg.autoSpeak}\n` +
+                        `python scripts/speaker.py --set autoSpeakMaxChars ${cfg.autoSpeakMaxChars}\n` +
+                        `python scripts/speaker.py --set autoSpeakSkipCodeBlocks ${cfg.autoSpeakSkipCodeBlocks}\n` +
+                        `python scripts/speaker.py --set autoSpeakMode ${cfg.autoSpeakMode}\n\n` +
                         `Then speak this test phrase: "${cfg.testPhrase}"`;
             
             const output = document.getElementById('console-output');
@@ -612,7 +660,7 @@
             // In real use, user would copy-paste to me or I read the DOM (but here just show)
             // For this demo, we also show how the user can ask me.
             alert("Copy the commands above and paste them to me in chat, or just say:\n\n" + 
-                  `"set engine to ${cfg.engine} with voice ${cfg.voice}" (this is now the default)`);
+                  `"set engine to ${cfg.engine} with voice ${cfg.voice} and autospeak ${cfg.autoSpeak}" (this is now the default)`);
         }
 
         function copyApplyCommands() {
@@ -620,7 +668,11 @@
             const cmd = `python scripts/speaker.py --set engine ${cfg.engine}
 python scripts/speaker.py --set voice "${cfg.voice}"
 python scripts/speaker.py --set rate ${cfg.rate}
-python scripts/speaker.py --set volume ${cfg.volume}`;
+python scripts/speaker.py --set volume ${cfg.volume}
+python scripts/speaker.py --set autoSpeak ${cfg.autoSpeak}
+python scripts/speaker.py --set autoSpeakMaxChars ${cfg.autoSpeakMaxChars}
+python scripts/speaker.py --set autoSpeakSkipCodeBlocks ${cfg.autoSpeakSkipCodeBlocks}
+python scripts/speaker.py --set autoSpeakMode ${cfg.autoSpeakMode}`;
 
             navigator.clipboard.writeText(cmd).then(() => {
                 // simple toast
@@ -656,6 +708,11 @@ python scripts/speaker.py --set volume ${cfg.volume}`;
             document.getElementById('rate').value = 1.0;
             document.getElementById('volume').value = 0.75;
             document.getElementById('test-phrase').value = '';
+            // autospeak defaults (0.2.0)
+            document.getElementById('autoSpeak').checked = false;
+            document.getElementById('autoSpeakMaxChars').value = '1200';
+            document.getElementById('autoSpeakSkipCodeBlocks').checked = true;
+            document.getElementById('autoSpeakMode').value = 'full';
             updateVoicePresets();
             document.getElementById('rate-value').textContent = '1.00';
             document.getElementById('volume-value').textContent = '0.75';
@@ -689,6 +746,12 @@ python scripts/speaker.py --set volume ${cfg.volume}`;
             engineEl.value = 'edge-tts';
             updateVoicePresets();
             document.getElementById('voice').value = 'en-US-AriaNeural';
+
+            // autospeak 0.2.0 defaults (off, conservative)
+            document.getElementById('autoSpeak').checked = false;
+            document.getElementById('autoSpeakMaxChars').value = '1200';
+            document.getElementById('autoSpeakSkipCodeBlocks').checked = true;
+            document.getElementById('autoSpeakMode').value = 'full';
         }
 
         function initMermaid() {
@@ -710,7 +773,7 @@ python scripts/speaker.py --set volume ${cfg.volume}`;
             document.getElementById('overview').classList.remove('hidden');
             
             // Keyboard hint
-            console.log('%c[Voice Visualizer] Tip: Open this file in your browser for the live config console (defaults to edge-tts + Aria).', 'color:#64748b');
+            console.log('%c[Voice Visualizer] Tip: Open this file in your browser for the live config console (defaults to edge-tts + Aria + autospeak keys). OutLoud rebrand.', 'color:#64748b');
             
             // Optional: auto-run a light mermaid if diagram is visible later
         }
@@ -720,7 +783,7 @@ python scripts/speaker.py --set volume ${cfg.volume}`;
 
         // Bonus: allow user to click a status to "speak" a demo phrase via alert + copy
         function demoSpeak() {
-            const phrase = "This is the current state of the claude-code-voice plugin. Default is edge-tts with Aria via playsound.";
+            const phrase = "This is the current state of the OutLoud plugin (formerly claude-code-voice). Default is edge-tts with Aria via playsound.";
             alert("To speak this right now, tell me in the chat:\n\nspeak: " + phrase);
         }
     </script>

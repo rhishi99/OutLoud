@@ -6,7 +6,11 @@
   "language": "en",
   "strip_code": true,
   "max_chars": 6500,
-  "_comment": "Recommended default: edge-tts + playsound for clean playback (no media player popup). Lightweight fallbacks: native (zero deps) or pyttsx3. kokoro is paused (experimental, open to contributors).",
+  "autoSpeak": false,
+  "autoSpeakMaxChars": 1200,
+  "autoSpeakSkipCodeBlocks": true,
+  "autoSpeakMode": "full",
+  "_comment": "Recommended default: edge-tts + playsound for clean playback (no media player popup). Lightweight fallbacks: native (zero deps) or pyttsx3. kokoro is paused (experimental, open to contributors). autoSpeak is opt-in. Set OUTLOUD_MUTE=1 to globally disable speech (CI/pairing).",
   "_examples": {
     "natural_microsoft": { "engine": "edge-tts", "voice": "en-US-AriaNeural" },
     "fast_native": { "engine": "native" },

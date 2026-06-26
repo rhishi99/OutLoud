@@ -1,9 +1,10 @@
 {
-  "name": "@claude-code-voice/speaker",
-  "version": "0.1.0",
-  "description": "claude-code-voice: On-demand TTS speaker for Claude Code (edge-tts + playsound default, native/pyttsx3 fallbacks). Plugin + local + Grok Build ready. Zero extra tokens.",
+  "name": "@outloud/speaker",
+  "version": "0.2.0",
+  "description": "OutLoud: On-demand + auto TTS speaker plugin for Claude Code / Grok Build (edge-tts + playsound default). Zero extra tokens. autoSpeak, status badge, hotkeys, /speak.",
   "main": "hooks/save-last.js",
   "bin": {
+    "outloud": "./scripts/speak-wrapper.js",
     "claude-speaker": "./scripts/speak-wrapper.js"
   },
   "repository": {
@@ -15,6 +16,7 @@
     "url": "https://github.com/rhishi99/claude-code-voice/issues"
   },
   "keywords": [
+    "outloud",
     "claude-code",
     "claude-code-plugin",
     "text-to-speech",
@@ -27,9 +29,10 @@
     "developer-tools",
     "cli",
     "neural-voice",
-    "screen-reader"
+    "screen-reader",
+    "autospeak"
   ],
-  "author": "claude-code-voice contributors",
+  "author": "OutLoud contributors",
   "license": "MIT",
   "engines": {
     "node": ">=18"

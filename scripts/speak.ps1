@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-  Claude Code Voice Speaker - speaks the last captured Claude response.
+  OutLoud Speaker (formerly claude-code-voice) - speaks the last captured response.
 
 .DESCRIPTION
   Reads last-response.txt (from APPDATA\claude-code-voice or ~/.config) and speaks it

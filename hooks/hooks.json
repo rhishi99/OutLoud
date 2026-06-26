@@ -1,5 +1,5 @@
 {
-  "description": "Claude Code Voice speaker plugin hooks. Captures last assistant output on Stop so /speak and hotkeys can read it aloud.",
+  "description": "OutLoud speaker plugin hooks. Captures last assistant output on Stop (and autoSpeak when enabled) so /speak, hotkey, and status badge work.",
   "hooks": {
     "Stop": [
       {

@@ -1,10 +1,10 @@
 <div align="center">
 
-# 🔊 claude-code-voice
+# 🔊 OutLoud
 
-### Give Claude Code (and Grok Build) a voice — hear your AI's output instead of reading it.
+### OutLoud — give your AI coding agent a voice (Claude Code, Grok Build; Gemini/Codex next).
 
-A lightweight, on-demand text-to-speech speaker plugin. High-quality neural voice via **edge-tts + playsound** (no media-player popup), with native/`pyttsx3` fallbacks. **Zero extra LLM tokens** — it only speaks text that was already generated.
+A lightweight, on-demand (and optional auto-narration) text-to-speech speaker plugin. High-quality neural voice via **edge-tts + playsound** (no media-player popup), with native/`pyttsx3` fallbacks. **Zero extra LLM tokens** — it only speaks text that was already generated.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-7c3aed)](https://docs.claude.com/en/docs/claude-code)
@@ -13,6 +13,12 @@ A lightweight, on-demand text-to-speech speaker plugin. High-quality neural voic
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20WSL-blue)](#-requirements)
 
 </div>
+
+---
+
+> **Rebrand note**: This project was previously known as `claude-code-voice`. It has been rebranded to **OutLoud**.  
+> The repository folder on disk (and most internal paths/config directories) remains `claude-code-voice` **for now** (a full rename is planned as a follow-up).  
+> Marketplace references, clone commands, config locations (`claude-code-voice`), and scripts continue to use the legacy folder name until the rename lands.
 
 ---
 
@@ -34,10 +40,12 @@ This project was **designed and built end-to-end with [Grok Build](https://grok.
 - 💸 **Zero extra tokens** — the speaker reads text Claude/Grok *already* produced. It never calls an LLM.
 - ⌨️ **Multiple triggers** — hotkey, `/speak` slash command, CLI, or status-line badge.
 - 🪝 **Automatic capture** — a Stop hook quietly saves the last response so it's ready to speak on demand.
-- 🧩 **Real plugin** — proper `.claude-plugin/` structure, hooks, commands, and skills.
+- 🔁 **Optional autoSpeak** — opt-in automatic narration after Stop (with limits, code skipping, and modes).
+- 🧩 **Real plugin** — proper hooks, commands, and skills.
 - 🤖 **Multi-agent** — one shared backend powers both **Claude Code** (hook-based) and **Grok Build** (direct invoke).
 - 🔁 **Pluggable engines** — `edge-tts`, `native` (OS built-in, offline, zero deps), `pyttsx3`. `kokoro` (offline neural) is paused/experimental.
 - ♿ **Accessibility-first** — listen while you work; great for eyes-off and screen-reader-adjacent workflows.
+- 🔇 **Global mute** — `OUTLOUD_MUTE=1` kill switch (respected everywhere).
 
 ---
 
@@ -63,19 +71,45 @@ pip install -r requirements.txt
 python scripts/speaker.py --set engine edge-tts --set voice "en-US-AriaNeural"
 ```
 
-### Add the status-line badge (recommended)
+### Add the status line badge (recommended)
 
-Add to `~/.claude/settings.json`:
+See the dedicated **[Status Line](#status-line-informational-only)** section below.
+
+---
+
+## Status Line (informational only)
+
+OutLoud can show a compact badge in Claude Code's footer / status bar:
+
+- `OutLoud` (on-demand ready)
+- `auto` (autoSpeak enabled)
+- `OutLoud [muted]` (when `OUTLOUD_MUTE=1`)
+- `/speak` (fallback label)
+
+**Honest note**: The status line is **text-only** and **NOT clickable**. It is purely informational.  
+There is no button or tap target — use your global hotkey or type `/speak` (or `/speak last`) in the prompt.
+
+### How to install the status line
+
+1. Add (or merge) the following into `~/.claude/settings.json` (create the file if it does not exist):
 
 ```json
 {
   "statusLine": {
-    "command": "node \"/path/to/claude-code-voice/scripts/status.js\""
+    "command": "node \"/absolute/path/to/claude-code-voice/scripts/status.js\""
   }
 }
 ```
 
-Restart Claude Code after adding it.
+**Use an absolute path** to `scripts/status.js` (example for Windows):
+
+```json
+"command": "node \"C:\\Users\\YourName\\path\\to\\claude-code-voice\\scripts\\status.js\""
+```
+
+2. Fully restart Claude Code.
+
+The script reads your live `config.json` + the `OUTLOUD_MUTE` env var on every render.
 
 ---
 
@@ -84,7 +118,7 @@ Restart Claude Code after adding it.
 1. Ask Claude (or Grok) something.
 2. Hear the last response any of these ways:
    - Press your hotkey (e.g. `Ctrl+Alt+S`)
-   - Type `/speak`
+   - Type `/speak` (or `/speak last`)
    - Run it directly:
      ```bash
      python scripts/speaker.py --last
@@ -94,8 +128,116 @@ Restart Claude Code after adding it.
    python scripts/speaker.py "This is a very natural voice"
    /speak Some custom text here
    ```
+4. Toggle auto-narration:
+   ```bash
+   /speak on          # enable autoSpeak
+   /speak off         # disable autoSpeak
+   /speak stop        # best-effort stop current playback
+   ```
 
-> Large code blocks are spoken as `[code block]` so you're not read a wall of syntax.
+> Large code blocks are spoken as `[code block]` (or omitted entirely under autoSpeak) so you're not read a wall of syntax.
+
+---
+
+## 🗣️ AutoSpeak (optional automatic narration)
+
+`autoSpeak` lets OutLoud automatically read responses aloud after the Stop hook (opt-in only). It is **disabled by default**.
+
+It always runs **non-blocking** (detached process) and never holds the hook.
+
+### The four config keys
+
+| Key                        | Type    | Default   | Description |
+|----------------------------|---------|-----------|-------------|
+| `autoSpeak`                | boolean | `false`   | Master switch. When `true`, the Stop hook will speak a processed slice of the response. |
+| `autoSpeakMaxChars`        | number  | `1200`    | Hard cap on characters spoken automatically (shorter & friendlier than the on-demand `max_chars`). |
+| `autoSpeakSkipCodeBlocks`  | boolean | `true`    | When `true`, fenced + inline code is stripped entirely (clean narration). When `false`, code becomes `[code block]`. |
+| `autoSpeakMode`            | string  | `"full"`  | How to truncate when over the char limit:<br>• `"full"` — take the first N chars (word-aware)<br>• `"summary"` — first sentence + last sentence<br>• `"first-paragraph"` — up to first blank line (or cutoff) |
+
+### Examples
+
+Enable a nice summary mode (recommended for long answers):
+
+```json
+{
+  "autoSpeak": true,
+  "autoSpeakMaxChars": 900,
+  "autoSpeakSkipCodeBlocks": true,
+  "autoSpeakMode": "summary"
+}
+```
+
+Minimal "first paragraph only":
+
+```bash
+python scripts/speaker.py --set autoSpeak true
+python scripts/speaker.py --set autoSpeakMaxChars 600
+python scripts/speaker.py --set autoSpeakMode first-paragraph
+```
+
+Via slash command (Claude Code):
+
+```
+/speak on
+/speak off
+```
+
+Via the CLI (works everywhere):
+
+```bash
+python scripts/speaker.py --autospeak on
+python scripts/speaker.py --autospeak off
+python scripts/speaker.py --config
+```
+
+**Safety**: `autoSpeak` is completely ignored when `OUTLOUD_MUTE=1` is set.
+
+On-demand hotkey + `/speak` (and `/speak last`) **always** use the full saved last response (subject only to the regular `max_chars` + `strip_code` settings).
+
+---
+
+## 🔧 Configuration
+
+All settings live in a single JSON file:
+
+- **Windows**: `%APPDATA%\claude-code-voice\config.json`
+- **macOS / Linux**: `~/.config/claude-code-voice/config.json`
+
+See [`config.example.json`](config.example.json) for a complete starting point.
+
+### Full config reference
+
+| Key                        | Type    | Default            | Notes |
+|----------------------------|---------|--------------------|-------|
+| `engine`                   | string  | `"edge-tts"`       | `edge-tts` (recommended), `native`, `pyttsx3`, `kokoro` (experimental) |
+| `voice`                    | string  | `"en-US-AriaNeural"` | Engine-specific voice name/ID |
+| `rate`                     | number  | `1.0`              | 0.5–2.0 speed multiplier |
+| `volume`                   | number  | `1.0`              | 0.0–1.0 |
+| `language`                 | string  | `"en"`             | Used by some engines (e.g. kokoro) |
+| `strip_code`               | boolean | `true`             | On-demand: replace code blocks with `[code block]` |
+| `max_chars`                | number  | `6500`             | Hard truncation for on-demand speech |
+| `autoSpeak`                | boolean | `false`            | Enable automatic narration after Stop |
+| `autoSpeakMaxChars`        | number  | `1200`             | Char limit for auto narration |
+| `autoSpeakSkipCodeBlocks`  | boolean | `true`             | Strip code when auto-speaking |
+| `autoSpeakMode`            | string  | `"full"`           | `"full"` \| `"summary"` \| `"first-paragraph"` |
+
+**Global kill switch** (environment variable, works everywhere):
+
+```bash
+OUTLOUD_MUTE=1
+```
+
+When set, **all** speech (manual + autoSpeak) is suppressed. Perfect for CI, pair programming, or recording.
+
+Change settings live:
+
+```bash
+python scripts/speaker.py --set engine edge-tts
+python scripts/speaker.py --set voice en-GB-SoniaNeural
+python scripts/speaker.py --set rate 1.05
+python scripts/speaker.py --config
+python scripts/speaker.py --list-voices
+```
 
 ---
 
@@ -108,13 +250,7 @@ Restart Claude Code after adding it.
 | pyttsx3 | Good | `pip install pyttsx3` | Yes | Better native control |
 | kokoro *(paused/experimental)* | Very good (local neural) | contributions welcome | Yes | Fully offline neural |
 
-Change engine/voice anytime:
-
-```bash
-python scripts/speaker.py --set engine edge-tts
-python scripts/speaker.py --set voice en-GB-SoniaNeural
-python scripts/speaker.py --config        # view current settings
-```
+Change engine/voice anytime (see Configuration section above).
 
 ---
 
@@ -129,7 +265,96 @@ playsound==1.2.2
 
 - All playback is **local** after install. `edge-tts` needs internet to synthesize.
 - The `native` engine works fully offline with **zero extra packages**.
-- Config lives at `%APPDATA%\claude-code-voice\config.json` (Windows) or `~/.config/claude-code-voice/config.json`. See [`config.example.json`](config.example.json).
+- Config + last-response live under the `claude-code-voice` directory (see above).
+
+---
+
+## ⌨️ Hotkeys (per-OS setup)
+
+Bind a global hotkey so you can hear the last response from anywhere without touching the mouse or terminal.
+
+**The exact command** to run against the saved last response:
+
+```bash
+python /full/path/to/claude-code-voice/scripts/speaker.py --last
+```
+
+**Equivalent convenient wrappers** (recommended on Windows):
+
+- Windows: `powershell -ExecutionPolicy Bypass -File "C:\full\path\claude-code-voice\speak.ps1" -Last`
+- Linux/macOS helper: `./speak.sh --last` (or `bash speak.sh --last`)
+
+Always prefer **absolute paths** in hotkey bindings.
+
+### Windows
+
+**PowerToys Keyboard Manager** (easiest, zero code):
+
+1. Open PowerToys → Keyboard Manager → Remap a shortcut.
+2. New shortcut: `Ctrl + Alt + S` (or your preference).
+3. Action: "Launch program".
+4. Program: full path to `python.exe`
+5. Arguments: `"C:\path\to\claude-code-voice\scripts\speaker.py" --last`
+6. (Optional) Start in: the project folder.
+
+**AutoHotkey v2** example (`outloud.ahk`):
+
+```ahk
+#Requires AutoHotkey v2.0
+; Ctrl+Alt+S
+^!s::{
+    Run 'python "E:\path\to\claude-code-voice\scripts\speaker.py" --last', , "Hide"
+}
+```
+
+Run the script (or compile to `.exe` and put in Startup folder).
+
+Alternative: use the root dispatcher for native routing:
+
+```ahk
+^!s::{
+    Run 'powershell -ExecutionPolicy Bypass -File "E:\path\to\claude-code-voice\speak.ps1" -Last', , "Hide"
+}
+```
+
+### macOS
+
+**Shortcuts app (built-in)**:
+
+1. Open Shortcuts → File → New Shortcut.
+2. Add action "Run Shell Script".
+3. Paste:
+   ```
+   python3 /Users/you/path/to/claude-code-voice/scripts/speaker.py --last
+   ```
+4. Give it a name (e.g. "OutLoud Speak Last").
+5. System Settings → Keyboard → Keyboard Shortcuts → App Shortcuts (or Services) → assign `Cmd + Shift + S`.
+
+**Karabiner-Elements** (advanced):
+
+Create a complex modification that runs the shell command above.
+
+### Linux
+
+**sxhkd** (popular with bspwm, i3, etc.) in `~/.config/sxhkd/sxhkdrc`:
+
+```
+ctrl + alt + s
+    python3 /home/you/claude-code-voice/scripts/speaker.py --last
+```
+
+Then `pkill -USR1 sxhkd` (or restart).
+
+**xbindkeys** in `~/.xbindkeysrc`:
+
+```
+"python3 /home/you/claude-code-voice/scripts/speaker.py --last"
+    control + alt + s
+```
+
+Run `xbindkeys -p` to reload.
+
+Use your window manager's native keybinding tool if preferred.
 
 ---
 
@@ -137,8 +362,9 @@ playsound==1.2.2
 
 - **Claude Code:** a Stop hook (`hooks/save-last.js`) writes cleaned text to `last-response.txt` after every final response. `/speak` or your hotkey plays it.
 - **Grok Build:** no Stop hook, so Grok invokes the speaker scripts directly (see [`skills/grok-voice/SKILL.md`](skills/grok-voice/SKILL.md)).
-- Both share the same `config.json`, engines, and capture file — one backend, two agents.
-- **Nothing auto-speaks.** Audio only plays when you (or a hotkey/`/speak`) ask for it.
+- **autoSpeak (opt-in):** when enabled, the same hook also fires a detached speaker call on a processed slice of the text.
+- Both agents share the same `config.json`, engines, and capture file — one backend, two (soon more) agents.
+- Speaking is always explicit (hotkey, CLI, `/speak`) **or** opt-in via `autoSpeak`. Nothing speaks by default.
 
 See the [interactive visualizer](voice-plugin-visualizer.html) for the full flow diagram.
 
@@ -151,6 +377,7 @@ PRs and issues welcome — especially:
 - Reviving **kokoro** for fully-offline neural voice.
 - A native speaker **button** inside the Grok Build / Claude Code UI.
 - More voices, engines, and platform testing (macOS / Linux / WSL).
+- Polish on the upcoming folder rename.
 
 Fork, branch, and open a PR. Keep it lightweight.
 
@@ -158,10 +385,10 @@ Fork, branch, and open a PR. Keep it lightweight.
 
 ## 📜 License
 
-[MIT](LICENSE) © claude-code-voice contributors. **Built with Grok Build.**
+[MIT](LICENSE) © OutLoud contributors. **Built with Grok Build.**
 
 <div align="center">
 
-`claude-code` · `tts` · `edge-tts` · `voice` · `accessibility` · `grok` · `developer-tools` · `cli` · `neural-voice`
+`claude-code` · `outloud` · `tts` · `edge-tts` · `voice` · `accessibility` · `grok` · `developer-tools` · `cli` · `neural-voice`
 
 </div>

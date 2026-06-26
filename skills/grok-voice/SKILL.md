@@ -10,7 +10,7 @@ description: >
 license: MIT
 ---
 
-# Grok Voice (for Grok Build)
+# OutLoud / Grok Voice (for Grok Build)
 
 This is the **complete skill** that turns on voice output mode inside Grok Build.
 

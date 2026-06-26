@@ -7,7 +7,7 @@ You are helping the user configure the local speaker plugin for better voice out
 
 Current tools:
 - The speaker reads from the same last-response.txt used by the Stop hook.
-- Config lives at the user's claude-code-voice/config.json (or %APPDATA%).
+- Config lives at the user's claude-code-voice/config.json (or %APPDATA%). (Product rebranded to OutLoud; internal folder kept for compatibility.)
 
 When user asks to configure:
 1. Read current state if needed by telling them to run `python scripts/speaker.py --config`

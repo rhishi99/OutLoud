@@ -1,5 +1,5 @@
 ﻿<#
-claude-code-voice Setup (edge-tts + playsound default)
+OutLoud Setup (edge-tts + playsound default)  [formerly claude-code-voice]
 
 Prints config, statusLine, hotkey examples, and helps install natural voices.
 #>
@@ -30,7 +30,7 @@ if (-not (Test-Path $configPath) -and (Test-Path $exampleConfig)) {
 }
 
 Write-Host ''
-Write-Host '=== claude-code-voice setup (configurable TTS) ===' -ForegroundColor Cyan
+Write-Host '=== OutLoud setup (configurable TTS) ===' -ForegroundColor Cyan
 Write-Host ''
 
 Write-Host '1. Status line (🔊 icon in Claude Code):' -ForegroundColor Yellow
