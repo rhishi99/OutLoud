@@ -1,0 +1,26 @@
+{
+  "name": "@claude-code-voice/speaker",
+  "version": "0.1.0",
+  "description": "claude-code-voice: On-demand TTS speaker for Claude Code (edge-tts + playsound default, native/pyttsx3 fallbacks). Plugin + local + Grok Build ready. Zero extra tokens.",
+  "main": "hooks/save-last.js",
+  "bin": {
+    "claude-speaker": "./scripts/speak-wrapper.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourname/claude-code-voice.git"
+  },
+  "keywords": [
+    "claude-code",
+    "claude-code-plugin",
+    "tts",
+    "voice",
+    "speaker",
+    "accessibility"
+  ],
+  "author": "claude-code-voice contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}

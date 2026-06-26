@@ -1,0 +1,17 @@
+{
+  "description": "Claude Code Voice speaker plugin hooks. Captures last assistant output on Stop so /speak and hotkeys can read it aloud.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/save-last.js"],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

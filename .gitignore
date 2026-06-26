@@ -1,0 +1,44 @@
+﻿# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Virtual environments (huge with torch, scipy etc.)
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+
+# Hugging Face / Kokoro model cache (300MB+)
+.cache/
+**/.cache/
+**/*Kokoro-82M*/
+**/*kokoro-v*.pth
+**/*kokoro*.bin
+**/*models--hexgrad--*
+
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+*.whl
+*.tsbuildinfo
+
+# Node
+node_modules/
+
+# Local / user state (never commit)
+last-response.txt
+config.json
+last-spoken.mp3
+*.log
+
+# Git internal temp objects
+.git/objects/tmp_obj_*
