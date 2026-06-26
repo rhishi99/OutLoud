@@ -99,6 +99,8 @@ This project was **designed and built end-to-end with [Grok Build](https://grok.
 /plugin install speaker@outloud
 ```
 
+After install you'll see `/speaker:speak` (a.k.a. `/speak`) in the command list and the Stop hook starts capturing responses automatically. **The plugin still needs Python TTS deps + a working audio device** — see [Using OutLoud after install](#-using-outloud-after-install-wsl--native) (essential on WSL).
+
 ### Option B — Clone & set up locally (incl. WSL)
 
 ```bash
@@ -115,6 +117,47 @@ python scripts/speaker.py --set engine edge-tts --set voice "en-US-AriaNeural"
 ### Add the status line badge (recommended)
 
 See the dedicated **[Status Line](#status-line-informational-only)** section below.
+
+---
+
+## ▶️ Using OutLoud after install (WSL & native)
+
+Installing the plugin registers the commands and the Stop hook — but **speech needs Python TTS deps and an audio device**. Do this once:
+
+**1. Install the voice deps** (in the same Python the plugin will call):
+
+```bash
+cd /path/to/claude-code-voice          # WSL example: /mnt/e/.../claude-code-voice
+pip3 install --user edge-tts playsound==1.2.2
+```
+
+> ⚠️ The plugin runs `python scripts/speaker.py`. On most WSL distros only `python3` exists — make `python` resolve:
+> ```bash
+> python --version || sudo apt install -y python-is-python3
+> ```
+
+**2. Smoke test (confirms edge-tts + audio):**
+
+```bash
+python scripts/speaker.py "Hello from OutLoud"
+```
+
+- You hear it → ready. ✅
+- Silent but logs `Played cleanly...` → no audio device. WSL2 has **no sound by default**; you need **WSLg** (Windows 11 / recent Windows 10 provides PulseAudio out of the box).
+
+**3. Drive it from Claude Code:**
+
+| Command | Effect |
+|---|---|
+| `/speak on` | auto-narrate every reply (fires after the Stop hook) |
+| `/speak last` | speak the last response on demand |
+| `/speak "some text"` | speak arbitrary text now |
+| `/speak off` | disable auto-narration |
+| `/speak stop` | best-effort stop current playback |
+
+> Tip: `/speak` with **no argument** is ambiguous (the agent will ask what you want). Use `/speak last` or `/speak on` to act directly.
+
+The default engine is **edge-tts** (natural neural voice). `OUTLOUD_MUTE=1` is a global kill switch honored everywhere. If a response wasn't captured yet, capture happens on the **next** Stop — ask something first, then `/speak last`.
 
 ---
 
