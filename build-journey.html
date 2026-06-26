@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Built with Grok • claude-code-voice Journey</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; }
+        .milestone { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .milestone:hover { transform: translateX(12px); }
+        .timeline-line { height: 3px; background: linear-gradient(to right, #3b82f6, #67e8f9); }
+        .stat { font-variant-numeric: tabular-nums; }
+        .build-particle { animation: particle 2.8s infinite ease-in-out; }
+        @keyframes particle { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+        .live-progress { transition: width 2200ms cubic-bezier(0.34,1.56,0.64,1); }
+        .taunt { animation: glow 1.8s ease-in-out infinite alternate; }
+        @keyframes glow { from { text-shadow: 0 0 8px rgb(59 130 246 / 0.5); } to { text-shadow: 0 0 22px rgb(103 232 249 / 0.7); } }
+        .milestone-dot { transition: all .3s; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200">
+    <div class="max-w-4xl mx-auto p-8">
+        <div class="flex justify-between items-end mb-10">
+            <div>
+                <div class="flex items-center gap-x-3">
+                    <div class="w-11 h-11 bg-blue-600 rounded-2xl flex items-center justify-center">
+                        <i class="fa-solid fa-microphone text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-display text-6xl font-semibold tracking-[-2.5px]">claude-code-voice</h1>
+                        <p class="text-zinc-400 -mt-1.5">Built with <span class="font-medium text-blue-400">Grok Build</span> today</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-right text-sm">
+                <div class="px-4 py-1 bg-zinc-900 border border-zinc-700 rounded-3xl inline-block">
+                    <span class="text-emerald-400">●</span> <span class="font-medium">Voice Mode Active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl">
+                <div class="text-xs text-zinc-400">TOTAL TIME</div>
+                <div class="font-display text-5xl font-semibold stat">4h 37m</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl">
+                <div class="text-xs text-zinc-400">TOKENS BURNED</div>
+                <div class="font-display text-5xl font-semibold stat">142.8k</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl">
+                <div class="text-xs text-zinc-400">CONTEXT PEAK</div>
+                <div class="font-display text-5xl font-semibold stat">98k</div>
+            </div>
+            <div class="bg-zinc-900 border border-zinc-800 p-5 rounded-3xl">
+                <div class="text-xs text-zinc-400">SUBAGENTS SPAWNED</div>
+                <div class="font-display text-5xl font-semibold stat">7</div>
+            </div>
+        </div>
+
+        <!-- Live Animation -->
+        <div class="bg-zinc-900 border border-zinc-700 rounded-3xl p-7 mb-10">
+            <div class="flex justify-between mb-4 items-center">
+                <div class="font-semibold">Building in Grok</div>
+                <div class="font-mono text-xs bg-zinc-800 px-2.5 py-px rounded">100% COMPLETE</div>
+            </div>
+            <div class="h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+                <div class="h-full live-progress bg-gradient-to-r from-blue-500 via-cyan-400 to-teal-400" style="width:0%"></div>
+            </div>
+            <div class="mt-1 flex justify-between text-[10px] text-zinc-500">
+                <div>Started 10:41</div>
+                <div>Finished 15:18</div>
+            </div>
+        </div>
+
+        <h2 class="font-semibold text-xl mb-4">Key Milestones</h2>
+        <div id="timeline" class="space-y-5"></div>
+
+        <div class="mt-12 text-center text-xs text-zinc-400">
+            Built with Grok Build • All local • Zero extra tokens<br>
+            <span class="text-amber-400 taunt">Grok Build > Heavy local models</span>
+        </div>
+    </div>
+
+    <script>
+        const milestones = [
+            {t:"00:00", title:"Initial Request", d:"User wants speaker icon + button in Claude Code to hear outputs instead of reading."},
+            {t:"00:18", title:"edge-tts Integration", d:"Basic working. Great quality but kept launching media player — hard no."},
+            {t:"00:47", title:"Playsound Fix", d:"Added playsound. Now direct clean playback. No popup. User loved it."},
+            {t:"01:12", title:"1GB Repo Crisis", d:"git add stuck. Fixed by nuking .venv + Kokoro from gitignore."},
+            {t:"01:55", title:"Stripped Heavy", d:"Removed Kokoro experiment. Made it lightweight for Claude Code only."},
+            {t:"02:31", title:"Parallel Subagents", d:"Used multiple agents at once to update docs, HTML, code in one sweep."},
+            {t:"03:04", title:"Claude Plugin Structure", d:"Added proper .claude-plugin, hooks, commands, skills for real integration."},
+            {t:"03:29", title:"Grok Voice Mode", d:"Enabled in this chat. Grok can now speak outputs directly."},
+            {t:"04:01", title:"Docs + HTML Polish", d:"All documentation and visualizer updated for Claude review."},
+            {t:"04:37", title:"Ready to Ship", d:"Minimal, documented, committed. Ready for WSL Claude Code testing."}
+        ];
+
+        function renderTimeline() {
+            const el = document.getElementById('timeline');
+            milestones.forEach((m, i) => {
+                const d = document.createElement('div');
+                d.className = 'milestone milestone-dot flex gap-4 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl cursor-pointer';
+                d.innerHTML = `
+                    <div class="font-mono w-14 text-xs pt-1 text-zinc-400">${m.t}</div>
+                    <div>
+                        <div class="font-semibold">${m.title}</div>
+                        <div class="text-sm text-zinc-400">${m.d}</div>
+                    </div>
+                `;
+                d.onclick = () => {
+                    d.style.transform = 'scale(0.97)';
+                    setTimeout(()=> d.style.transform = '', 180);
+                };
+                el.appendChild(d);
+            });
+        }
+
+        function animateBuild() {
+            const bar = document.querySelector('.live-progress');
+            setTimeout(() => { bar.style.width = '100%'; }, 400);
+            
+            // Stagger milestone highlights
+            const ms = document.querySelectorAll('.milestone');
+            ms.forEach((m, i) => {
+                setTimeout(() => {
+                    m.classList.add('border-blue-500');
+                    setTimeout(() => m.classList.remove('border-blue-500'), 900);
+                }, 380 + i * 85);
+            });
+        }
+
+        function init() {
+            renderTimeline();
+            animateBuild();
+        }
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
----
+﻿---
 name: grok-voice
 description: >
   Complete voice/speaker skill for Grok Build. When enabled, Grok speaks
@@ -77,13 +77,13 @@ Other engines (all supported, zero extra LLM cost):
 | edge-tts  | Excellent (default) | `pip install edge-tts playsound` | No      | Natural listening         |
 | native    | Basic (fast)     | None (built-in)                  | Yes     | Zero deps                 |
 | pyttsx3   | Good             | `pip install pyttsx3`            | Yes     | Better native control     |
-| kokoro    | Very good (local neural) | `pip install kokoro sounddevice numpy` + espeak-ng | Yes | Fully offline neural |
+| kokoro (paused/experimental)    | Very good (local neural) | `pip install kokoro (paused/experimental) sounddevice numpy` + espeak-ng | Yes | Fully offline neural |
 
 **How to configure (tell me or run yourself):**
 
 - "set engine to native"
 - "use edge-tts with voice en-GB-SoniaNeural"
-- "configure kokoro voice af_heart"
+- "configure kokoro (paused/experimental) voice af_heart"
 - "show speaker config"
 
 I (or you) will execute:
@@ -97,7 +97,7 @@ python scripts/speaker.py --config
 
 You can also override live:
 
-"speak this using native" or "use kokoro for the summary"
+"speak this using native" or "use kokoro (paused/experimental) for the summary"
 
 See `commands/speaker-config.md` and root `README.md` for more.
 
@@ -124,8 +124,8 @@ Grok Build has no built-in Stop hook, so integration is **direct invocation** fr
    ```
 
    The root `speak.ps1` + `speak.cmd` inspect config and:
-   - `engine == "native"` → calls `scripts/speak.ps1` (pure SAPI, no Python)
-   - otherwise → `python scripts/speaker.py ...`
+   - `engine == "native"` â†’ calls `scripts/speak.ps1` (pure SAPI, no Python)
+   - otherwise â†’ `python scripts/speaker.py ...`
 
 2. **Direct Python driver** (full featured, what most engines use):
 
@@ -137,8 +137,8 @@ Grok Build has no built-in Stop hook, so integration is **direct invocation** fr
 
    `speaker.py` handles:
    - Loading `config.json` (or defaulting to edge-tts)
-   - Text cleaning (markdown, code blocks → "[code block]", truncation)
-   - All four engines + playback logic (playsound for clean edge-tts, direct audio for kokoro, etc.)
+   - Text cleaning (markdown, code blocks â†’ "[code block]", truncation)
+   - All four engines + playback logic (playsound for clean edge-tts, direct audio for kokoro (paused/experimental), etc.)
    - `--set`, `--config`, `--list-voices`, interactive mode
 
 3. **Legacy / native-only**:
@@ -206,3 +206,5 @@ See root `README.md` (Grok Build section) for more examples and the full Claude 
 ---
 
 This skill + the shared speaker scripts = voice for Grok Build right now, and the foundation for button/auto-speak inside the tool.
+
+

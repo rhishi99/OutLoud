@@ -1,4 +1,2 @@
 ﻿edge-tts
 playsound==1.2.2
-# Optional fallback
-# pyttsx3

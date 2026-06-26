@@ -1,5 +1,5 @@
-<#
-Claude Code Voice - Setup helper
+﻿<#
+claude-code-voice Setup (edge-tts + playsound default)
 
 Prints config, statusLine, hotkey examples, and helps install natural voices.
 #>
@@ -67,9 +67,10 @@ Write-Host '   # kokoro support is paused (experimental; contributions welcome f
 Write-Host ''
 
 Write-Host '6. Claude Code plugin install:' -ForegroundColor Yellow
-Write-Host '   /plugin marketplace add <yourname>/claude-code-voice'
+Write-Host '   /plugin marketplace add rhishi99/claude-code-voice'
 Write-Host '   /plugin install speaker@speaker'
 Write-Host ''
 
 Write-Host 'The Stop hook ONLY saves text. Speaking is on-demand (hotkey/CLI). No extra LLM tokens ever.' -ForegroundColor Green
 Write-Host 'Restart Claude Code after adding statusLine.'
+

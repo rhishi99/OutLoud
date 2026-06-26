@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -91,7 +91,7 @@
                 </div>
                 <div>
                     <h1 class="font-display text-3xl font-semibold tracking-tighter">claude-code-voice</h1>
-                    <p class="text-xs text-slate-400 -mt-1">Speaker Plugin • Grok Build + Claude Code</p>
+                    <p class="text-xs text-slate-400 -mt-1">Speaker Plugin • Claude Code (Grok testing optional)</p>
                 </div>
             </div>
             
@@ -103,7 +103,7 @@
                 </div>
                 
                 <div class="bg-emerald-900/30 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-3xl text-sm flex items-center gap-x-2">
-                    <span class="font-medium">Grok Build testing supported</span>
+                    <span class="font-medium">Claude Code testing (WSL focus)</span>
                 </div>
             </div>
         </div>
@@ -121,7 +121,7 @@
                 </h2>
                 <p class="mt-3 text-xl text-slate-400">
                     Default: edge-tts (Aria) + playsound for clean playback. Configurable TTS, on-demand only, zero extra LLM tokens. 
-                    Speaker flows for both Grok Build and future Claude Code. Live dev tool.
+                    Speaker flows for Claude Code plugin. Live dev tool (Grok testing available).
                 </p>
             </div>
 
@@ -129,16 +129,16 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
                 <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4">
                     <div class="text-xs uppercase tracking-widest text-slate-400">Current Mode</div>
-                    <div class="text-2xl font-semibold mt-1 text-emerald-400">Grok Testing</div>
+                    <div class="text-2xl font-semibold mt-1 text-emerald-400">Claude Code Testing (WSL)</div>
                     <div class="text-xs mt-1">edge-tts + playsound default • Direct calls + shared last-response</div>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4">
                     <div class="text-xs uppercase tracking-widest text-slate-400">Primary Engine</div>
                     <div class="flex gap-1 mt-2 flex-wrap">
-                        <span class="bg-emerald-900/50 border border-emerald-500/30 text-emerald-300 text-xs px-2 py-0.5 rounded">edge-tts (default)</span>
+                        <span class="bg-emerald-900/50 border border-emerald-500/30 text-emerald-300 text-xs px-2 py-0.5 rounded">edge-tts (default) + playsound + playsound</span>
                         <span class="bg-slate-800 text-xs px-2 py-0.5 rounded">+ playsound</span>
                     </div>
-                    <div class="text-[10px] mt-1 text-slate-500">native / pyttsx3 available • kokoro supported (no push for now)</div>
+                    <div class="text-[10px] mt-1 text-slate-500">native / pyttsx3 available • kokoro experimental (paused)</div>
                 </div>
                 <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4">
                     <div class="text-xs uppercase tracking-widest text-slate-400">Minimum Setup</div>
@@ -193,14 +193,14 @@
                                 <div>
                                     <div class="text-xs text-slate-400 mb-1">For natural voices (recommended):</div>
                                     <code class="text-emerald-300">pip install edge-tts playsound</code><br>
-                                    <span class="text-[10px] text-slate-500">edge-tts + playsound = clean playback, very natural. kokoro supported but not primary focus now.</span>
+                                    <span class="text-[10px] text-slate-500">edge-tts + playsound = clean playback, very natural. kokoro experimental (paused).</span>
                                 </div>
                             </div>
                             
                             <div class="flex gap-3">
                                 <div class="font-mono bg-slate-800 px-2 py-0.5 rounded text-xs self-start mt-0.5">3</div>
                                 <div>
-                                    <div class="text-xs text-emerald-300 mb-0.5">Configure via chat with me (Grok):</div>
+                                    <div class="text-xs text-emerald-300 mb-0.5">Configure for Claude Code:</div>
                                     <div class="bg-slate-950 text-emerald-300 px-3 py-1 rounded text-xs font-mono border border-slate-800">"set engine to edge-tts with Aria voice"</div>
                                     <div class="text-[10px] mt-1 text-slate-500">Default now: edge-tts + en-US-AriaNeural + playsound playback</div>
                                 </div>
@@ -208,7 +208,7 @@
                         </div>
                         
                         <div class="mt-4 pt-4 border-t border-slate-700 text-xs text-slate-400">
-                            Then just say: <span class="font-medium text-white">"speak the summary"</span> or <span class="font-medium text-white">"speak last"</span> (Grok will run real speaker.py)
+                            Use /speak or hotkey in Claude Code (or python scripts/speaker.py --last)
                         </div>
                     </div>
 
@@ -248,31 +248,31 @@
                 <div class="mt-6 bg-slate-900 border border-slate-700 rounded-3xl p-6">
                     <div class="flex items-center gap-x-2 mb-3">
                         <i class="fa-solid fa-hand-pointer text-blue-400"></i>
-                        <span class="font-semibold">How you get "button / hotkey speak" inside Grok &amp; Claude Code</span>
+                        <span class="font-semibold">How you get "button / hotkey speak" inside Claude Code</span>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
                         <div>
                             <div class="uppercase text-xs tracking-widest text-slate-400 mb-1">The capture is automatic</div>
                             <ul class="text-xs space-y-1 text-slate-300">
                                 <li>• <strong>Claude Code:</strong> Stop hook (hooks/save-last.js) quietly writes cleaned text to last-response.txt on every final response.</li>
-                                <li>• <strong>Grok Build:</strong> Grok directly runs speaker scripts with text (or uses --last against the shared capture file).</li>
+                                <li>• In Claude Code: /speak command or hotkey runs the speaker on captured output.</li>
                             </ul>
                             <div class="mt-3 text-xs">No auto-speak. The LLM output is just made "speakable".</div>
                         </div>
                         <div>
                             <div class="uppercase text-xs tracking-widest text-slate-400 mb-1">The "button"</div>
                             <div class="text-xs text-slate-300">
-                                <strong>Recommended:</strong> Global hotkey → runs <code class="bg-slate-800 px-1 rounded">scripts/speak.ps1</code> (or python speaker.py --last)<br>
+                                <strong>Recommended:</strong> Global hotkey â†’ runs <code class="bg-slate-800 px-1 rounded">scripts/speak.ps1</code> (or python speaker.py --last)<br>
                                 • Windows: PowerToys Keyboard Manager or AutoHotkey (e.g. Ctrl+Alt+S)<br>
                                 • Status line shows <span class="font-mono">🔊 last ~12s (hotkey or /speak)</span><br>
                                 • Claude: also type <code class="bg-slate-800 px-1">/speak</code><br>
-                                • In this Grok session: just say "speak the last" or "speak summary using speaker"
+                                • In Claude Code: /speak or hotkey; in Claude: say "speak..."
                             </div>
                             <div class="mt-2 text-[10px] text-emerald-300">This is the closest thing to a speaker button in the current terminal UIs.</div>
                         </div>
                     </div>
                     <div class="mt-3 pt-3 border-t border-slate-800 text-xs text-slate-400">
-                        The visualizer + Grok direct calls + hotkey = full dev loop right now. Later: install as real Claude plugin for the same hotkey/status experience.
+                        Use visualizer to test config, then install as Claude Code plugin for full hotkey + status + /speak experience.
                     </div>
                 </div>
 
@@ -468,7 +468,7 @@
                 </div>
 
                 <div class="mt-4 p-3 bg-slate-900 border border-slate-700 rounded-2xl text-xs">
-                    <span class="font-medium text-emerald-300">Current primary path:</span> edge-tts → generate mp3 → playsound (block=True) → delete temp file. Falls back gracefully.
+                    <span class="font-medium text-emerald-300">Current primary path:</span> edge-tts â†’ generate mp3 â†’ playsound (block=True) â†’ delete temp file. Falls back gracefully.
                 </div>
             </div>
 
@@ -606,7 +606,7 @@
                         `Then speak this test phrase: "${cfg.testPhrase}"`;
             
             const output = document.getElementById('console-output');
-            output.innerHTML = `<div class="text-emerald-400">✅ Message prepared for Grok:</div><pre class="text-xs mt-2 whitespace-pre-wrap">${msg}</pre>`;
+            output.innerHTML = `<div class="text-emerald-400">âœ… Message prepared for Claude:</div><pre class="text-xs mt-2 whitespace-pre-wrap">${msg}</pre>`;
             output.classList.remove('hidden');
             
             // In real use, user would copy-paste to me or I read the DOM (but here just show)
@@ -726,3 +726,8 @@ python scripts/speaker.py --set volume ${cfg.volume}`;
     </script>
 </body>
 </html>
+
+
+
+
+

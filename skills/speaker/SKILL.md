@@ -1,4 +1,4 @@
----
+﻿---
 name: speaker
 description: >
   Adds voice output capability to Claude Code. After you give a response,
@@ -41,3 +41,5 @@ Users can show the speaker status in Claude Code's status bar by adding the stat
 ## Technical
 
 The capture is automatic and silent. Nothing is sent over the network. Speech happens locally on the user's machine using native system voices (or configured TTS).
+
+

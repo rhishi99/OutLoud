@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 """
 claude-code-voice speaker.py
 
@@ -15,7 +15,7 @@ Supported engines (choose in config):
              (internet for audio, no API key, no cost for typical use)
 - native   : OS built-in (SAPI / say / espeak). Zero deps. Fast fallback.
 - pyttsx3  : Cross-platform native wrapper (better control).
-- kokoro   : Fully local neural (excellent quality for size). EXPERIMENTAL and OPTIONAL.
+- kokoro   : EXPERIMENTAL (paused - not required). Code present for contributors.
              Requires heavy deps: pip install kokoro sounddevice numpy (+ espeak-ng)
              **Can (and should) be skipped** unless you specifically want fully offline neural.
              Not required for the plugin to work. Falls back cleanly if missing.
@@ -542,3 +542,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

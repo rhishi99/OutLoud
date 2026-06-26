@@ -8,15 +8,26 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourname/claude-code-voice.git"
+    "url": "https://github.com/rhishi99/claude-code-voice.git"
+  },
+  "homepage": "https://github.com/rhishi99/claude-code-voice#readme",
+  "bugs": {
+    "url": "https://github.com/rhishi99/claude-code-voice/issues"
   },
   "keywords": [
     "claude-code",
     "claude-code-plugin",
+    "text-to-speech",
     "tts",
+    "edge-tts",
     "voice",
     "speaker",
-    "accessibility"
+    "accessibility",
+    "grok",
+    "developer-tools",
+    "cli",
+    "neural-voice",
+    "screen-reader"
   ],
   "author": "claude-code-voice contributors",
   "license": "MIT",

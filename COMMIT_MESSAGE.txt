@@ -1,1 +1,0 @@
-﻿feat: finalize edge-tts as primary with playsound for clean playback (no media player); deprecate kokoro for now (leave for OSS); comprehensive docs + HTML visualizer + skill + code updates. Full local speaker ready. Foundation for button/auto voice inside Grok Build and Claude Code plugins. Open source prep. Modelled on ponytail/ECC patterns.
