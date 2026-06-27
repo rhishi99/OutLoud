@@ -1,0 +1,12 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "speaker",
+  "version": "0.2.0",
+  "description": "OutLoud — voice for your AI. /speak control + /speaker:setup guided validation. edge-tts default, native fallback. Zero tokens.",
+  "author": {
+    "name": "OutLoud",
+    "url": "https://github.com/rhishi99/OutLoud"
+  },
+  "commands": "./commands",
+  "hooks": "./hooks/hooks.json"
+}

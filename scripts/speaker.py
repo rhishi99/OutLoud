@@ -62,6 +62,14 @@ import sys
 import tempfile
 from pathlib import Path
 
+# Windows consoles default to cp1252 and crash on ✓/✗/✅ glyphs (UnicodeEncodeError).
+# Force UTF-8 on stdout/stderr so setup output and status badges never crash.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")  # py3.7+
+    except Exception:
+        pass
+
 # ---------------- Config ----------------
 
 def get_config_dir() -> Path:
