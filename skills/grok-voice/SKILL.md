@@ -1,4 +1,4 @@
-﻿---
+---
 name: grok-voice
 description: >
   Complete voice/speaker skill for Grok Build. When enabled, Grok speaks

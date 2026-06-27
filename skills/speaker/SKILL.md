@@ -1,4 +1,4 @@
-﻿---
+---
 name: speaker
 description: >
   Adds voice output capability (OutLoud) to Claude Code. After you give a response,
