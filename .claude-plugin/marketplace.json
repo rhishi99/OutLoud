@@ -12,7 +12,7 @@
       "description": "Main speaker control + /speaker:setup (forces validation + prints exact setup commands or 'completed'). /speak last|on|\"text\". Self-guiding for WSL/Linux/mac.",
       "source": "./",
       "category": "productivity",
-      "version": "0.2.0"
+      "version": "0.2.1"
     }
   ]
 }
