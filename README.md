@@ -156,6 +156,14 @@ pip install --user edge-tts playsound==1.2.2
 Then use `/speak` again. The plugin now drives most of this for you on first use. 
 
 **Audio in WSL**: WSLg (Windows 11+) gives audio for free. Without it, run the speaker from native Windows instead.
+
+### `/speak` commands
+
+| Command | Effect |
+|---|---|
+| `/speak last` | speak the last response on demand |
+| `/speak "text"` | speak arbitrary text immediately |
+| `/speak on` | enable autoSpeak (auto-narrate after Stop hook) |
 | `/speak off` | disable auto-narration |
 | `/speak stop` | best-effort stop current playback |
 
@@ -503,7 +511,8 @@ Fallback: run from native Windows PowerShell instead, or install `mpg123` + use 
 
 **playsound / package issues**  
 Run `/speaker:setup` — it will print the exact `pip` (and apt for WSL) commands needed.  
-`pip install playsound==1.2.2` (exact pin recommended). Speaker falls back automatically if needed.
+`pip install playsound==1.2.2` (exact pin recommended). Speaker falls back automatically if needed.  
+Still stuck? Ask Claude Code to **"just set up OutLoud for me"** — `/speaker:setup` will delegate the install to a cheap sub-agent (haiku) that runs the platform-specific commands and re-validates automatically.
 
 **Stop hook not firing / no last response**  
 - Make sure the plugin is installed in Claude Code: `/plugin install speaker@outloud` (after marketplace add).  

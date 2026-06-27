@@ -29,6 +29,19 @@ Instructions:
    - Ask them to run `/speaker:setup` again after.
 5. Keep the response short and actionable. Do not invent extra steps.
 
+### Auto-setup fallback (when the user is stuck)
+
+If the user has run the suggested commands and `/speaker:setup` still fails, or they explicitly ask you to "just set it up for me", delegate the fix to a sub-agent so it does not consume the main session:
+
+- Spawn a general-purpose agent **using the cheapest available model** (e.g. `model: "haiku"`).
+- Task it to:
+  1. Detect the platform (Windows / WSL / Linux / macOS).
+  2. Run the exact apt + pip commands `--setup` printed (WSL: inside WSL).
+  3. Install missing deps (`edge-tts`, `playsound==1.2.2`, plus `mpg123`/`python3-venv` on Debian/WSL).
+  4. Re-run `--setup` and confirm it prints "✅ OutLoud setup completed successfully!".
+  5. Report back only the final status + any command that needed sudo (so the user can approve it).
+- Always pick the cheapest model for this agent — it is mechanical setup work, no reasoning needed.
+
 Always use the full ${CLAUDE_PLUGIN_ROOT} form so it works from any project.
 
 This command is designed to be run on first install and whenever the user wants to re-validate their environment.
