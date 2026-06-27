@@ -105,6 +105,9 @@ def load_config() -> dict:
     else:
         get_config_dir().mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
+        # Friendly first-run hint (visible when --config or first speak)
+        print("[speaker] Created default config at", path)
+        print("[speaker] Recommended: edge-tts + AriaNeural (natural). Use --set engine edge-tts if needed.")
     return cfg
 
 def save_config(cfg: dict):
@@ -297,7 +300,7 @@ def speak_edge_tts(text: str, cfg: dict):
         import asyncio
         import edge_tts
     except ImportError:
-        print("[speaker] edge-tts not installed. Falling back to native. pip install edge-tts", file=sys.stderr)
+        print_install_instructions("edge-tts")
         speak_native(text, cfg)
         return
 
@@ -484,6 +487,95 @@ def list_native_voices_hint():
     print("  - Linux: espeak-ng --voices or similar.")
 
 
+def print_install_instructions(missing: str = "edge-tts"):
+    """Print the shortest possible setup commands for WSL/Linux/macOS and Windows.
+    This lets the plugin itself drive the first-time setup instead of long README steps.
+    """
+    system = platform.system()
+    print("\n[OutLoud] Quick one-time setup (copy-paste):")
+
+    if system == "Windows":
+        print('  pip install edge-tts playsound==1.2.2')
+    else:
+        # WSL / Linux / macOS
+        print('  sudo apt update && sudo apt install -y python3-pip python3-venv mpg123')
+        print('  pip install --user edge-tts playsound==1.2.2')
+        print('')
+        print('  Tip for WSL audio: Use WSLg (default on Windows 11) or run the speaker from Windows PowerShell.')
+
+    print('\nThen try /speak (or /speaker:speak) again.')
+    print('Recommended engine: edge-tts (best quality).')
+
+
+def run_setup_check(cfg: dict):
+    """Dedicated logic for /speaker:setup.
+    - Checks environment (python, key packages)
+    - If problems: prints setup instructions
+    - If everything looks good: prints success + summary
+    """
+    print("\n[OutLoud] Running setup validation...")
+
+    system = platform.system()
+    issues = []
+
+    # Basic python check (we are already running under it)
+    print(f"  Platform: {system}")
+    print(f"  Python: {sys.version.split()[0]}")
+
+    # Try importing the recommended engine packages
+    recommended_engine = cfg.get("engine", "edge-tts")
+    print(f"  Current configured engine: {recommended_engine}")
+
+    try:
+        if recommended_engine == "edge-tts":
+            import edge_tts  # type: ignore
+            print("  ✓ edge-tts import OK")
+        elif recommended_engine == "pyttsx3":
+            import pyttsx3  # type: ignore
+            print("  ✓ pyttsx3 import OK")
+        else:
+            print(f"  (using {recommended_engine} - native fallback assumed available)")
+    except ImportError as e:
+        issues.append(f"Missing package for {recommended_engine}")
+        print(f"  ✗ Import failed: {e}")
+
+    # Check if playsound is needed for edge-tts
+    if recommended_engine == "edge-tts":
+        try:
+            import playsound  # type: ignore
+            print("  ✓ playsound import OK")
+        except ImportError:
+            issues.append("playsound not installed")
+            print("  ✗ playsound not found (needed for clean edge-tts playback)")
+
+    # Check config file exists
+    config_path = get_config_path()
+    if config_path.exists():
+        print(f"  ✓ Config exists at {config_path}")
+    else:
+        print(f"  ! Config will be created on first use")
+
+    # Check last-response capture dir
+    voice_dir = get_config_dir()
+    if voice_dir.exists():
+        print(f"  ✓ Voice data dir: {voice_dir}")
+    else:
+        print(f"  ! Voice data dir will be created automatically")
+
+    if issues:
+        print("\n[OutLoud] Setup incomplete. Fixing issues:")
+        print_install_instructions(recommended_engine)
+        print("Run the commands above in your terminal (WSL/Linux users: inside the distro), then run this again.")
+    else:
+        print("\n✅ OutLoud setup completed successfully!")
+        print("Current settings:")
+        for k in ["engine", "voice", "rate", "autoSpeak"]:
+            if k in cfg:
+                print(f"  {k}: {cfg[k]}")
+        print("\nYou can now use /speak last or /speak on")
+        print("Tip: Use /speaker:config to change voice/engine.")
+
+
 def _best_effort_stop_playback():
     """Best effort stop for /speak stop. Kills likely player / TTS child processes.
     Not guaranteed (depends on engine + platform). Safe to call.
@@ -532,9 +624,15 @@ def main():
     parser.add_argument("--list-voices", action="store_true", help="List available voices for the engine (edge-tts and pyttsx3 have many)")
     parser.add_argument("--stop", action="store_true", help="Best-effort kill current playback (for /speak stop)")
     parser.add_argument("--autospeak", choices=["on", "off"], help="Quick toggle for autoSpeak (used by /speak)")
+    parser.add_argument("--setup", action="store_true", help="Validate environment and print setup instructions or 'setup completed' status")
 
     args = parser.parse_args()
     cfg = load_config()
+
+    # Dedicated setup command for /speaker:setup
+    if args.setup:
+        run_setup_check(cfg)
+        return
 
     # Handle --list-voices (do this early)
     if args.list_voices:

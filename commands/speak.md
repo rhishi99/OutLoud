@@ -1,29 +1,36 @@
 ---
-description: OutLoud speaker control. /speak [text|last|on|off|stop]
-argument-hint: "[text to speak | last | on | off | stop]"
+description: OutLoud speaker control. Primary command: /speak (or /speaker:speak)
+argument-hint: "[last | on | off | stop | your text]"
 ---
 
-You are controlling the OutLoud (speaker) plugin.
+You control the OutLoud speaker.
 
-Supported forms (parse args after /speak):
+**Invocation rule (critical for WSL/Linux/mac + any project):**
+Always run using the installed plugin path (Claude Code substitutes it):
+- Preferred on WSL/Linux/mac: `bash "${CLAUDE_PLUGIN_ROOT}/speak.sh" --last` or `--autospeak on`
+- Fallback: `python3 "${CLAUDE_PLUGIN_ROOT}/scripts/speaker.py" --last`
+- Windows: `python "${CLAUDE_PLUGIN_ROOT}/scripts/speaker.py" ...`
 
-- /speak                  -> speak last saved response (via backend)
-- /speak last             -> same (explicit)
-- /speak "some words"     -> speak the provided text immediately
-- /speak on               -> enable autoSpeak (auto-narration after Stop). Run: python scripts/speaker.py --autospeak on   OR --set autoSpeak true. Confirm.
-- /speak off              -> disable autoSpeak. Run python scripts/speaker.py --autospeak off. Confirm state.
-- /speak stop             -> best-effort stop current playback. Run: python scripts/speaker.py --stop
+Supported:
+- /speak          → speak last response
+- /speak last
+- /speak "text"   → speak this
+- /speak on       → auto-narration after replies
+- /speak off
+- /speak stop
 
-Implementation:
-1. For "on"/"off": use terminal to execute `python scripts/speaker.py --autospeak on` (or off). Then tell user the result and current status.
-2. For "stop": run `python scripts/speaker.py --stop`. Report "attempted stop".
-3. For last / text: remind user (or execute if allowed) to use hotkey or the speak script: `python scripts/speaker.py --last` or pass text.
-   Respond briefly: "🔊 Playing last response via OutLoud..."
+Behavior:
+- If the Bash command fails with "python" / module not found / command not found:
+  1. Run the speaker command anyway so the user sees the exact error.
+  2. Tell the user to run `/speaker:setup` (it will print the exact commands needed).
+  3. "Run the commands it gives, then try /speak again."
+- For on/off: run the full-path --autospeak command, confirm, then show current state with --config if possible.
+- For last/text: run or tell the user the exact command. Keep reply short: "🔊 Speaking last response..."
 
-Always respect:
-- OUTLOUD_MUTE=1 disables all speech.
-- Config (autoSpeak etc) is live via the python speaker.py --config tool.
+Rules:
+- Respect OUTLOUD_MUTE=1
+- Never paste the full previous response text unless asked.
+- If nothing captured yet: "Ask me something first, then use /speak last."
+- Prefer the speak.sh wrapper on non-Windows for easier python3 handling.
 
-If no previous capture: "No output captured yet. Ask something then use hotkey or /speak."
-
-Never dump the full assistant text into chat unless user asks to copy it. Keep responses short + actionable. Use the real CLI for toggles so config persists.
+Keep every reply very short. The plugin itself now drives most of the setup instructions.

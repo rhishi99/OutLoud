@@ -99,7 +99,16 @@ This project was **designed and built end-to-end with [Grok Build](https://grok.
 /plugin install speaker@outloud
 ```
 
-After install you'll see `/speaker:speak` (a.k.a. `/speak`) in the command list and the Stop hook starts capturing responses automatically. **The plugin still needs Python TTS deps + a working audio device** — see [Using OutLoud after install](#-using-outloud-after-install-wsl--native) (essential on WSL).
+After install, use `/speak` (it may appear as `/speaker:speak` in the menu).
+
+Recommended first step:
+```
+/speaker:setup
+```
+
+This dedicated command forces validation + prints the exact minimal setup instructions for your platform (or "✅ setup completed" if everything is ready).
+
+**WSL/Linux/mac users**: run `/speaker:setup` — it will give you the precise `sudo apt` + `pip` lines to copy-paste.
 
 ### Option B — Clone & set up locally (incl. WSL)
 
@@ -120,38 +129,33 @@ See the dedicated **[Status Line](#status-line-informational-only)** section bel
 
 ---
 
-## ▶️ Using OutLoud after install (WSL & native)
+## ▶️ First run / WSL setup (now mostly automatic)
 
-Installing the plugin registers the commands and the Stop hook — but **speech needs Python TTS deps and an audio device**. Do this once:
+After `/plugin install speaker@outloud`, just type:
 
-**1. Install the voice deps** (in the same Python the plugin will call):
-
-```bash
-cd /path/to/claude-code-voice          # WSL example: /mnt/e/.../claude-code-voice
-pip3 install --user edge-tts playsound==1.2.2
+```
+/speak last
 ```
 
-> ⚠️ The plugin runs `python scripts/speaker.py`. On most WSL distros only `python3` exists — make `python` resolve:
-> ```bash
-> python --version || sudo apt install -y python-is-python3
-> ```
+or
 
-**2. Smoke test (confirms edge-tts + audio):**
-
-```bash
-python scripts/speaker.py "Hello from OutLoud"
+```
+/speaker:config
 ```
 
-- You hear it → ready. ✅
-- Silent but logs `Played cleanly...` → no audio device. WSL2 has **no sound by default**; you need **WSLg** (Windows 11 / recent Windows 10 provides PulseAudio out of the box).
+**Run `/speaker:setup`** — it will detect issues and print the exact minimal commands (or confirm ✅ setup completed).
 
-**3. Drive it from Claude Code:**
+### Quick manual version (if you prefer)
 
-| Command | Effect |
-|---|---|
-| `/speak on` | auto-narrate every reply (fires after the Stop hook) |
-| `/speak last` | speak the last response on demand |
-| `/speak "some text"` | speak arbitrary text now |
+**WSL/Linux/mac (one time in your terminal):**
+```bash
+sudo apt update && sudo apt install -y python3-pip python3-venv mpg123
+pip install --user edge-tts playsound==1.2.2
+```
+
+Then use `/speak` again. The plugin now drives most of this for you on first use. 
+
+**Audio in WSL**: WSLg (Windows 11+) gives audio for free. Without it, run the speaker from native Windows instead.
 | `/speak off` | disable auto-narration |
 | `/speak stop` | best-effort stop current playback |
 
@@ -161,67 +165,18 @@ The default engine is **edge-tts** (natural neural voice). `OUTLOUD_MUTE=1` is a
 
 ---
 
-## 🐧 Test in WSL + Claude Code (simplest path)
+## 🐧 Minimal WSL path (plugin does most of the work)
 
-> First time? This is the shortest route to hearing OutLoud inside Claude Code running in WSL. ~3 minutes.
+Preferred flow:
+1. `/plugin marketplace add rhishi99/OutLoud`
+2. `/plugin install speaker@outloud`
+3. Inside Claude Code type `/speak last`
 
-**1. Clone + install (inside your WSL shell)**
+The plugin will print the exact 2 lines you need to run in your WSL terminal (apt + pip).
 
-```bash
-sudo apt update && sudo apt install -y python3-venv python3-pip mpg123
-git clone https://github.com/rhishi99/OutLoud.git
-cd OutLoud
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+Only if you want to clone manually for development, see the older detailed steps in previous versions of this README or the repo history.
 
-**2. Make sure WSL can play audio**
-
-WSL2 has **no audio device by default**. You need one of:
-
-- **WSLg** (Windows 11, or recent Windows 10) — audio works out of the box via built-in PulseAudio. Nothing to do. ✅
-- **No WSLg?** — easiest fallback is to let Windows play the file. Either upgrade to WSLg, or run OutLoud from native Windows/PowerShell instead (see [Quick Start → Option B]).
-
-**3. Smoke test (no Claude Code yet)**
-
-```bash
-python3 scripts/speaker.py "Hello from OutLoud, running inside WSL"
-```
-
-- You hear the sentence → audio path works. ✅
-- No sound but it prints `Played cleanly...` → audio device missing (see step 2).
-- `playsound failed ... falling back` → it tries `mpg123`/`ffplay`/`aplay`; install `mpg123` (step 1) if all fail.
-
-**4. Wire into Claude Code**
-
-```bash
-# from inside Claude Code, in this repo:
-/plugin marketplace add rhishi99/OutLoud
-/plugin install speaker@outloud
-```
-
-Then ask Claude anything and run:
-
-```
-/speak last
-```
-
-You should hear the last response. To auto-narrate every reply:
-
-```
-/speak on
-```
-
-**5. If something's off**
-
-```bash
-python3 scripts/speaker.py --config        # show current settings
-python3 scripts/speaker.py --engine native --last   # offline fallback voice
-OUTLOUD_MUTE=1 ...                          # global kill switch
-```
-
-> Tip: `engine native` works fully offline with zero extra packages — good for confirming the plumbing before debugging edge-tts/audio.
+**Audio note**: WSLg (Windows 11) is the easiest. Otherwise run the speaker commands from a Windows PowerShell instead of inside WSL.
 
 ---
 
@@ -546,8 +501,9 @@ Fallback: run from native Windows PowerShell instead, or install `mpg123` + use 
 `python scripts/speaker.py --engine native "offline test"`  
 (native is zero-dep, built-in on Win/mac, needs espeak-ng on Linux).
 
-**playsound install issues**  
-`pip install playsound==1.2.2` (exact pin recommended). If it fails on Linux, install system player (`mpg123`, `ffplay`) — speaker falls back automatically.
+**playsound / package issues**  
+Run `/speaker:setup` — it will print the exact `pip` (and apt for WSL) commands needed.  
+`pip install playsound==1.2.2` (exact pin recommended). Speaker falls back automatically if needed.
 
 **Stop hook not firing / no last response**  
 - Make sure the plugin is installed in Claude Code: `/plugin install speaker@outloud` (after marketplace add).  

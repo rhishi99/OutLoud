@@ -123,10 +123,12 @@ function spawnDetachedSpeak(text) {
   // Most reliable cross: shell out python -m with full path to speaker.py from known locations.
 
   // Strategy: try several locations for speaker.py, then spawn detached.
+  // __dirname when the hook runs is inside the installed plugin's hooks/ directory.
   const candidates = [
-    // when running from repo root context
+    // Most reliable when installed as plugin
     path.join(__dirname, '..', 'scripts', 'speaker.py'),
-    // common
+    // When running from a checkout of the repo
+    path.join(__dirname, '..', '..', 'scripts', 'speaker.py'),
     path.join(process.cwd(), 'scripts', 'speaker.py'),
   ];
 
@@ -134,14 +136,12 @@ function spawnDetachedSpeak(text) {
   for (const c of candidates) {
     try { if (fs.existsSync(c)) { speakerPy = c; break; } } catch {}
   }
-  if (!speakerPy) {
-    // last resort: rely on PATH python having it in cwd or user will have it working for manual too
-    speakerPy = path.join(getVoiceDir(), '..', 'speaker.py'); // unlikely
-  }
 
-  // Build command: python "<speakerPy>" "<text>"
+  // Build command: use python3 on non-Windows (WSL/Linux/mac), python on Windows.
   const cmd = process.platform === 'win32' ? 'python' : 'python3';
-  const args = speakerPy && fs.existsSync(speakerPy) ? [speakerPy, text] : ['-c', `import subprocess,sys;print("speaker backend not locatable")`];
+  const args = speakerPy && fs.existsSync(speakerPy)
+    ? [speakerPy, text]
+    : ['-c', `print("OutLoud speaker backend script not found at expected plugin location")`];
 
   try {
     const child = spawn(cmd, args, {

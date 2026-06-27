@@ -226,7 +226,9 @@
                                 <ul class="mt-1 text-xs space-y-0.5 text-slate-400">
                                     <li>• .claude-plugin/marketplace.json</li>
                                     <li>• hooks/ (Stop hook saves text)</li>
-                                    <li>• commands/speak.md (/speak on/off/stop)</li>
+                                    <li>• commands/speak.md (/speak on/off/stop/last)</li>
+                                    <li>• commands/config.md (/speaker:config)</li>
+                                    <li>• commands/setup.md (/speaker:setup - validates + guides install)</li>
                                     <li>• skills/speaker/SKILL.md</li>
                                     <li>• Status line badge (🔊 hardened)</li>
                                 </ul>
@@ -523,8 +525,9 @@
 │   ├── hooks.json                # Registers Stop hook
 │   └── save-last.js              # Captures last assistant message
 ├── commands/
-│   ├── speak.md                  # /speak command definition
-│   └── speaker-config.md         # /speaker-config helper
+│   ├── speak.md                  # /speak (main)
+│   ├── config.md                 # /speaker:config
+│   └── setup.md                  # /speaker:setup (force validation + instructions)
 ├── skills/
 │   ├── speaker/SKILL.md          # Claude Code skill
 │   └── grok-voice/SKILL.md       # Grok Build skill (this chat)

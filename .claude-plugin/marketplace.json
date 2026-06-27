@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "outloud",
-  "description": "OutLoud — give your AI coding agent a voice. On-demand + autoSpeak auto-narration. edge-tts + playsound default. Zero tokens. Hotkey, /speak, status badge.",
+  "description": "OutLoud — voice for your AI. /speak (or /speaker:speak) for control. Run /speaker:setup after install for guided validation + one-time setup (WSL/Linux/mac friendly). Auto-capture + auto-narration. edge-tts default. Zero tokens.",
   "owner": {
     "name": "OutLoud",
     "url": "https://github.com/rhishi99/OutLoud"
@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "speaker",
-      "description": "OutLoud speaker: Stop hook capture, autoSpeak, hardened status badge, /speak on|off|stop|last. Same backend for Claude Code + Grok Build.",
+      "description": "Main speaker control + /speaker:setup (forces validation + prints exact setup commands or 'completed'). /speak last|on|\"text\". Self-guiding for WSL/Linux/mac.",
       "source": "./",
       "category": "productivity",
       "version": "0.2.0"

@@ -86,7 +86,7 @@ Other engines (all supported, zero extra LLM cost):
 - "configure kokoro (paused/experimental) voice af_heart"
 - "show speaker config"
 
-I (or you) will execute:
+I (or you) will execute (when cwd is the OutLoud repo):
 
 ```powershell
 python scripts/speaker.py --set engine edge-tts
@@ -95,11 +95,13 @@ python scripts/speaker.py --set rate 1.05
 python scripts/speaker.py --config
 ```
 
+(When using via the Claude Code plugin the commands automatically use the full plugin path with CLAUDE_PLUGIN_ROOT.)
+
 You can also override live:
 
 "speak this using native" or "use kokoro (paused/experimental) for the summary"
 
-See `commands/speaker-config.md` and root `README.md` for more.
+See `commands/config.md` (becomes /speaker:config) and README for more.
 
 Run the setup helper for full guidance:
 
@@ -178,7 +180,7 @@ At the end of important replies I may add: "🔊 Press your hotkey or say 'speak
 
 - A speaker button would instantly speak (or replay) the last agent output.
 - Auto-speak mode could speak final answers / key results automatically after generation (user-controlled, respects config).
-- Engine/voice settings would be configurable from inside the tool (via `/speaker-config`, agent settings UI, or commands/speaker-config skill), without manual JSON or CLI.
+- Engine/voice settings would be configurable from inside the tool (via `/speaker:config` or `/speak`, agent settings UI), without manual JSON or CLI.
 - Same backend would power both Claude Code (hook-based) and Grok Build (button/tool-based).
 
 Everything is architected for that future: unified config, scripts, dispatchers, and capture file. This `grok-voice` skill is the development bridge that makes the button experience possible.
