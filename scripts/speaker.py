@@ -338,24 +338,36 @@ def speak_edge_tts(text: str, cfg: dict):
             try:
                 # === PRIMARY PATH: playsound for clean playback (recommended) ===
                 # playsound is primary because it blocks cleanly without spawning
-                # extra console/player windows on most platforms. Install: pip install playsound
+                # extra console/player windows on most platforms.
+                # MUST pin to 1.2.2: playsound>=1.3.0 ships a broken setup.py
+                # (fails to build from sdist) and never actually installs,
+                # so this ImportError path silently falls through to the
+                # media-player popup below on every single run.
+                # Install: pip install playsound==1.2.2
                 # Cleanup is guaranteed via finally below.
                 played = False
+                defer_cleanup = False  # set True for fire-and-forget players we must not delete under
                 try:
                     from playsound import playsound
                     playsound(audio_path, block=True)
                     played = True
                     print("[speaker] Played cleanly via playsound (primary path for edge-tts)")
                 except ImportError:
-                    print("[speaker] playsound not installed (optional but recommended for clean playback)")
+                    print("[speaker] playsound not installed or broken — falling back to OS media player.")
+                    print("[speaker] Fix: pip install playsound==1.2.2  (newer 1.3.0+ fails to build; must pin this version)")
                 except Exception as e:
                     print(f"[speaker] playsound failed ({e}), falling back to OS player...")
 
                 if not played:
                     # Fallback OS players (secondary)
                     if system == "Windows":
-                        # Launch minimized to avoid stealing focus / full window
+                        # `start` launches the player detached and returns immediately,
+                        # before the player has opened/read the file. Deleting right
+                        # after (in finally below) races that open and can yank the
+                        # file out from under it mid-launch. Defer cleanup to the next
+                        # speak invocation's "remove old file if present" instead.
                         subprocess.run(['cmd', '/c', 'start', '/min', '', audio_path], shell=True, check=False)
+                        defer_cleanup = True
                     elif system == "Darwin":
                         subprocess.run(["afplay", audio_path], check=False)
                     else:
@@ -369,17 +381,22 @@ def speak_edge_tts(text: str, cfg: dict):
                         else:
                             print(f"[speaker] Audio saved to {audio_path} (no player found to auto-play)", file=sys.stderr)
             finally:
-                # === ALWAYS CLEAN UP (playsound primary path + all fallbacks) ===
-                # Uses finally so we *always* delete the temp mp3, even if playback raises.
-                # Prevents leftover files, repeated player popups, and disk accumulation.
-                try:
-                    if os.path.exists(audio_path):
-                        os.unlink(audio_path)
-                        print("[speaker] Cleaned up temporary audio file.")
-                except Exception:
-                    # File may be briefly locked on Windows after playsound; ignore.
-                    # Next speak will overwrite or clean on next successful run.
-                    pass
+                # === CLEAN UP (playsound primary path + blocking fallbacks) ===
+                # Uses finally so we delete the temp mp3 as soon as playback that we
+                # actually waited on finishes. Skipped when defer_cleanup is set
+                # (detached Windows `start` fallback) since the player hasn't
+                # necessarily opened the file yet — see comment above.
+                if defer_cleanup:
+                    print("[speaker] Skipping immediate cleanup (detached player launch); will clean up on next run.")
+                else:
+                    try:
+                        if os.path.exists(audio_path):
+                            os.unlink(audio_path)
+                            print("[speaker] Cleaned up temporary audio file.")
+                    except Exception:
+                        # File may be briefly locked on Windows after playsound; ignore.
+                        # Next speak will overwrite or clean on next successful run.
+                        pass
 
         asyncio.run(_run())
     except Exception as e:
@@ -554,7 +571,8 @@ def run_setup_check(cfg: dict):
             print("  ✓ playsound import OK")
         except ImportError:
             issues.append("playsound not installed")
-            print("  ✗ playsound not found (needed for clean edge-tts playback)")
+            print("  ✗ playsound not found or failed to install (needed for clean edge-tts playback)")
+            print("    Fix: pip install playsound==1.2.2  (must pin — 1.3.0+ has a broken setup.py and won't install)")
 
     # Check config file exists
     config_path = get_config_path()

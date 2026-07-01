@@ -74,7 +74,7 @@ Other engines (all supported, zero extra LLM cost):
 
 | Engine    | Quality          | Install                          | Offline | Best for                  |
 |-----------|------------------|----------------------------------|---------|---------------------------|
-| edge-tts  | Excellent (default) | `pip install edge-tts playsound` | No      | Natural listening         |
+| edge-tts  | Excellent (default) | `pip install edge-tts playsound==1.2.2` | No      | Natural listening         |
 | native    | Basic (fast)     | None (built-in)                  | Yes     | Zero deps                 |
 | pyttsx3   | Good             | `pip install pyttsx3`            | Yes     | Better native control     |
 | kokoro (paused/experimental)    | Very good (local neural) | `pip install kokoro (paused/experimental) sounddevice numpy` + espeak-ng | Yes | Fully offline neural |
@@ -189,7 +189,7 @@ See the full vision in `voice-plugin-visualizer.html` and `README.md`.
 
 ## Quick Test Right Now
 
-1. (Recommended) `pip install edge-tts playsound`
+1. (Recommended) `pip install edge-tts playsound==1.2.2`
 2. `powershell -File scripts/setup.ps1`
 3. Tell me: **"enable grok-voice and speak a test of the current project"**
 

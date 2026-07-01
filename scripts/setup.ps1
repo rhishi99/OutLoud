@@ -61,7 +61,7 @@ Write-Host ('   python "' + $pythonSpeaker + '" --config     # view current sett
 Write-Host ''
 
 Write-Host '5. Install natural voices (recommended for best experience):' -ForegroundColor Yellow
-Write-Host '   pip install edge-tts playsound      # edge-tts + playsound = clean neural playback (no media popup)'
+Write-Host '   pip install edge-tts playsound==1.2.2   # pin required: playsound 1.3.0+ fails to build and silently falls back to a media-player popup'
 Write-Host '   pip install pyttsx3                 # lightweight improved native fallback'
 Write-Host '   # kokoro support is paused (experimental; contributions welcome for fully offline neural)'
 Write-Host ''
