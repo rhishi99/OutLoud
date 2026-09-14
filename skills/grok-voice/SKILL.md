@@ -14,7 +14,7 @@ license: MIT
 
 This is the **complete skill** that turns on voice output mode inside Grok Build.
 
-It lets **me (Grok)** speak key parts of my responses using the exact same local TTS backend that powers the Claude Code speaker plugin. No extra LLM tokens are ever used — the speaker only reads text I already generated.
+It lets **me (Grok)** speak key parts of my responses using the exact same local TTS backend that powers the Claude Code speaker plugin. The speech itself uses no LLM tokens — the speaker only reads text I already generated. Invoking it adds one small tool call to my turn.
 
 The project is fully multi-agent: Claude Code (via Stop hook + /speak) + Grok Build (direct invocation) share `config.json`, engines, `last-response.txt`, and the speaker scripts.
 
@@ -53,7 +53,7 @@ When grok-voice is active:
   - "say a test phrase"
 - I can also re-speak saved last output using `-Last` when appropriate.
 
-All of this is zero-token speech — just local playback of what was already written.
+The audio is local playback of what was already written; the only token cost is the small tool call that starts it.
 
 ## Configuring the Engine (edge-tts default)
 

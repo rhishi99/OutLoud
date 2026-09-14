@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "outloud",
-  "description": "OutLoud — voice for your AI. /speak (or /speaker:speak) for control. Run /speaker:setup after install for guided validation + one-time setup (WSL/Linux/mac friendly). Auto-capture + auto-narration. edge-tts default. Zero tokens.",
+  "description": "OutLoud — voice for your AI. /speak (or /speaker:speak) for control. Run /speaker:setup after install for guided validation + one-time setup (WSL/Linux/mac friendly). Auto-capture + auto-narration. edge-tts default. Zero tokens via hotkey or auto-read (/speak costs one normal turn).",
   "owner": {
     "name": "OutLoud",
     "url": "https://github.com/rhishi99/OutLoud"

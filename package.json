@@ -1,7 +1,7 @@
 {
   "name": "@outloud/speaker",
   "version": "0.2.3",
-  "description": "OutLoud: On-demand + auto TTS speaker plugin for Claude Code / Grok Build (edge-tts + playsound default). Zero extra tokens. autoSpeak, status badge, hotkeys, /speak.",
+  "description": "OutLoud: On-demand + auto TTS speaker plugin for Claude Code / Grok Build (edge-tts + playsound default). Zero extra tokens via hotkey or auto-read. autoSpeak, status badge, hotkeys, /speak.",
   "main": "hooks/save-last.js",
   "bin": {
     "outloud": "./scripts/speak-wrapper.js",

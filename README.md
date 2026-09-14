@@ -27,7 +27,7 @@ A lightweight, on-demand (and optional auto-narration) text-to-speech speaker pl
 
 **The problem** — long AI replies are walls of text that tire eyes and kill flow.
 
-**OutLoud's fix** — zero extra tokens, instant voice narration.
+**OutLoud's fix** — instant voice narration, with zero extra tokens via hotkey or auto-read.
 
 ```mermaid
 flowchart LR
@@ -78,7 +78,7 @@ This project was **designed and built end-to-end with [Grok Build](https://grok.
 
 - 🎙️ **Natural neural voice** — `edge-tts` (Microsoft `en-US-AriaNeural` by default) for genuinely human-sounding output.
 - 🔇 **No popup** — `playsound` plays the MP3 directly. No media player hijacking your screen.
-- 💸 **Zero extra tokens** — the speaker reads text Claude/Grok *already* produced. It never calls an LLM.
+- 💸 **Zero extra tokens with the hotkey or auto-read** — the speaker reads text Claude/Grok *already* produced and never calls an LLM itself. The `/speak` slash command is the exception: Claude Code sends it to the model like any prompt, so it costs one normal Claude turn (bigger in long sessions). Use the hotkey or `! python scripts/speaker.py --last` to stay token-free.
 - ⌨️ **Multiple triggers** — hotkey, `/speak` slash command, CLI, or status-line badge.
 - 🪝 **Automatic capture** — a Stop hook quietly saves the last response so it's ready to speak on demand.
 - 🔁 **Optional autoSpeak** — opt-in automatic narration after Stop (with limits, code skipping, and modes).
