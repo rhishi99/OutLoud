@@ -609,12 +609,16 @@ def _best_effort_stop_playback():
     system = platform.system()
     try:
         if system == "Windows":
-            # Kill python speakers and common audio players (non-fatal)
-            for pat in ["python* *speaker.py", "python* *speak", "cmd* /c start *last-spoken", "afplay", "mpg123", "ffplay"]:
-                subprocess.run(["taskkill", "/F", "/IM", "python.exe", "/T"], capture_output=True)
-                subprocess.run(["taskkill", "/F", "/FI", f"IMAGENAME eq python.exe", "/T"], capture_output=True)
-            # Also try to stop SAPI if stuck (harder, restart synth not easy)
-            print("[speaker] Windows stop attempted (taskkill on python TTS processes)")
+            # Kill only OutLoud processes: other speaker.py runs (python/pythonw) and the native
+            # engine's speak.ps1 child. Never touch unrelated Python or PowerShell work.
+            ps = (
+                "Get-CimInstance Win32_Process -Filter \"Name like 'python%' or Name like 'powershell%'\" | "
+                "Where-Object { ($_.CommandLine -like '*speaker.py*' -or $_.CommandLine -like '*speak.ps1*') "
+                f"-and $_.ProcessId -ne {os.getpid()} }} | "
+                "ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }"
+            )
+            subprocess.run(["powershell", "-NoProfile", "-Command", ps], capture_output=True)
+            print("[speaker] Windows stop attempted (killed running speaker.py processes)")
         elif system == "Darwin":
             subprocess.run(["pkill", "-f", "afplay"], capture_output=True)
             subprocess.run(["pkill", "-f", "say"], capture_output=True)

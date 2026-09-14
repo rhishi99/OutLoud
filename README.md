@@ -416,7 +416,15 @@ Always prefer **absolute paths** in hotkey bindings.
 
 ### Windows
 
-**PowerToys Keyboard Manager** (easiest, zero code):
+**One command, nothing to install** (recommended):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install-hotkey.ps1
+```
+
+Adds `Ctrl + Alt + S` (speak last response) and `Ctrl + Alt + X` (stop) as native Windows shortcut keys. Pick other keys with `-SpeakKey 'CTRL+ALT+R' -StopKey 'CTRL+ALT+Q'`; undo with `-Remove`.
+
+**PowerToys Keyboard Manager** (zero code):
 
 1. Open PowerToys → Keyboard Manager → Remap a shortcut.
 2. New shortcut: `Ctrl + Alt + S` (or your preference).
